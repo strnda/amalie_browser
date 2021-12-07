@@ -1,0 +1,25 @@
+---
+title: "Amalie - browser"
+output: html_document
+runtime: shiny
+---
+
+# Browser {.tabset}
+
+## Filip - data
+
+```{r phill, echo = FALSE}
+
+shinyAppFile(appFile = "./R/filip/shiny_placeholder.R",
+             options = list(width = "100%",
+                            height = 950))
+```
+
+## Eleni dHRUM
+
+```{r eleni, echo = FALSE}
+
+```
+
+
+
