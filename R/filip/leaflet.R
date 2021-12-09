@@ -80,7 +80,9 @@ tmst <- as.data.frame(x = tmst)
 tmst$geometry <- list(geometry)
 
 tmst_sf <- st_sf(tmst,
-                 crs = "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
+                 crs = "EPSG:102066")
+                   
+                #   "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
 plot(tmst_sf)
 sp::proj4string(sp::CRS("+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs" ))
 st_set_geometry()
