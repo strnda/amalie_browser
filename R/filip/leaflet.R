@@ -1,9 +1,9 @@
-library(sf); library(readxl); library(data.table)
+library(sf); library(leaflet); library(data.table)
 
 hru <- st_read(dsn = "./data/hru_info.shp")
-
+tmst <- fread(input = "./data/soil_moisture_sensor_info.csv")
+dendro <- fread(input = "data/dendrometer_info.csv")
 head(x = hru)
-library(leaflet)
 
 leaflet() %>% 
   addTiles() %>%
@@ -11,6 +11,20 @@ leaflet() %>%
               options = WMSTileOptions(format = "image/png",
                                        crs = "EPSG:102066"),
               layers = "GR_ORTFOTORGB") %>%
+  addMarkers(data = tmst,
+             lng = ~X,
+             lat = ~Y,
+             label = paste("Vlkhost půdy",
+                           "</br>",
+                           "ID senzoru:",
+                           tmst$serial_number)) %>% 
+  addMarkers(data = dendro,
+             lng = ~X,
+             lat = ~Y,
+             label = paste("Dendrometr",
+                           "</br>",
+                           "ID senzoru:",
+                           dendro$ID)) %>% 
   addPolygons(data = hru,
               label = ~paste(ID, 
                              as.character(x = OBJECTID)),
@@ -63,33 +77,56 @@ leaflet() %>%
 # tmst_2 <- read_excel(path = "./data_raw/databaze TOMST IGA_29_11_21_l_uprava.xlsx",
 #                      sheet = "sensors", 
 #                      skip = 1)
-tmst <- fread(file = "~/ownCloud/Active Docs/amalie/amalie_browser/data_raw/sensors_descrptionL.csv",
-              sep = ";")
-geometry <- st_multipoint(x = as.matrix(x = tmst[, .(x, y)]))
-tmst <- as.data.frame(x = tmst)
-tmst$geometry <- list(geometry)
 
-tmst_sf <- st_sf(tmst,
-                 crs = "EPSG:102066")
-                   
-                #   "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
-plot(tmst_sf)
-sp::proj4string(sp::CRS("+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs" ))
-st_set_geometry()
+gpx <- readLines(con = "./data_raw/pozice_stromu_s_dm.gpx")
+gpx
 
-tmst_sf <- st_transform(x = tmst_sf,
-                        crs = "4236")
-plot(x = tmst_1$x,
-     y = tmst_1$y,
-     pch = 19,
-     cex = 2)
-points(x = tmst_2$x,
-       y = tmst_2$y,
-       col = "red",
-       pch = 19,
-       cex = 1.5)
-points(x = tmst_3$x,
-       y = tmst_3$y,
-       pch = 19,
-       col = "green",
-       cex = 1)
+nfo_dendro <- data.table()
+
+nfo_dendro[, `:=`(coord = gpx[grep(pattern = "lat",
+                                   x = gpx)],
+                  elevation = gpx[grep(pattern = "ele",
+                                       x = gpx)],
+                  name = gpx[grep(pattern = "name",
+                                  x = gpx)])]
+
+nfo_dendro[, elevation := as.numeric(x = gsub(pattern = "<ele>|</ele>", 
+                                              replacement = "",
+                                              x = elevation))]
+str(object = nfo_dendro)
+
+nfo_dendro[, name := as.factor(x = gsub(pattern = "<name>|</name>", 
+                                        replacement = "",
+                                        x = name))]
+str(nfo_dendro)
+
+nfo_dendro[, coord := gsub(pattern = "<wpt|</wpt>| lat=|lon=|\"|>|    ", 
+                                        replacement = "",
+                                        x = coord)]
+str(nfo_dendro)
+
+lon_lat <- as.matrix(x = do.call(what = rbind,
+                                  args = strsplit(x = nfo_dendro$coord, 
+                                                  split = " ")))
+nfo_dendro <- cbind(nfo_dendro, lon_lat)
+setnames(x = nfo_dendro,
+         old = c("V1", "V2"),
+         new = c("Y", "X"))
+nfo_dendro <- nfo_dendro[grep(pattern = "BP|KL",
+                              x = name, 
+                              invert = TRUE)]
+
+nfo_dendro[, `:=`(X = as.numeric(x = X),
+                  Y = as.numeric(x = Y))]
+
+nfo_dendro[, coord := NULL]
+nfo_dendro[, ID := as.numeric(x = substr(x = name, 
+                                         start = 1,
+                                         stop = 17))]
+nfo_dendro[, name := substr(x = name, 
+                            start = 17,
+                            stop = nchar(x = as.character(x = name)))]
+nfo_dendro
+
+fwrite(x = nfo_dendro,
+       file = "./data/dendrometer_info.csv")
