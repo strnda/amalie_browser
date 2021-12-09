@@ -18,7 +18,9 @@ shinyAppFile(appFile = "./R/filip/shiny_placeholder.R",
 ## Eleni dHRUM
 
 ```{r eleni, echo = FALSE}
-
+shinyAppFile(appFile = "./R/eleni/sliders.R",
+             options = list(width = "100%",
+                            height = 950))
 ```
 
 
