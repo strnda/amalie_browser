@@ -1,18 +1,8 @@
 library(sf); library(readxl); library(data.table)
 
-pol_1 <- st_read(dsn = "./data_raw/ShapeFiles/BP_D_FG_WGS.shp")
-pol_1$ID <- "BP"
-plot(pol_1)
-
-pol_2 <- st_read(dsn = "./data_raw/ShapeFiles/KL_D_FG_WGS.shp")
-pol_2$ID <- "KL"
-plot(pol_2)
-
-hru <- rbind(pol_1, 
-             pol_2)
+hru <- st_read(dsn = "./data/hru_info.shp")
 
 head(x = hru)
-
 library(leaflet)
 
 leaflet() %>% 
@@ -80,7 +70,9 @@ tmst <- as.data.frame(x = tmst)
 tmst$geometry <- list(geometry)
 
 tmst_sf <- st_sf(tmst,
-                 crs = "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
+                 crs = "EPSG:102066")
+                   
+                #   "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
 plot(tmst_sf)
 sp::proj4string(sp::CRS("+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs" ))
 st_set_geometry()
