@@ -1,4 +1,4 @@
-library(sf)
+library(sf); library(readxl); library(data.table)
 
 pol_1 <- st_read(dsn = "./data_raw/ShapeFiles/BP_D_FG_WGS.shp")
 pol_1$ID <- "BP"
@@ -64,3 +64,40 @@ leaflet() %>%
 # 
 # st_transform(x = shp_dta[[1]], 
 #              crs = 4326)
+# 
+# 
+# 
+# tmst_1 <- read_excel(path = "data_raw/databaze TOMST BP+KL.xlsx",
+#                      sheet = "sensors", 
+#                      skip = 1)
+# tmst_2 <- read_excel(path = "./data_raw/databaze TOMST IGA_29_11_21_l_uprava.xlsx",
+#                      sheet = "sensors", 
+#                      skip = 1)
+tmst <- fread(file = "~/ownCloud/Active Docs/amalie/amalie_browser/data_raw/sensors_descrptionL.csv",
+              sep = ";")
+geometry <- st_multipoint(x = as.matrix(x = tmst[, .(x, y)]))
+tmst <- as.data.frame(x = tmst)
+tmst$geometry <- list(geometry)
+
+tmst_sf <- st_sf(tmst,
+                 crs = "+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs")
+plot(tmst_sf)
+sp::proj4string(sp::CRS("+proj=krovak +lat_0=49.5 +lon_0=42.5 +alpha=30.28813975277778 +k=0.9999 +x_0=0 +y_0=0 +ellps=bessel +pm=ferro +units=m +no_defs" ))
+st_set_geometry()
+
+tmst_sf <- st_transform(x = tmst_sf,
+                        crs = "4236")
+plot(x = tmst_1$x,
+     y = tmst_1$y,
+     pch = 19,
+     cex = 2)
+points(x = tmst_2$x,
+       y = tmst_2$y,
+       col = "red",
+       pch = 19,
+       cex = 1.5)
+points(x = tmst_3$x,
+       y = tmst_3$y,
+       pch = 19,
+       col = "green",
+       cex = 1)
