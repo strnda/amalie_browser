@@ -18,7 +18,7 @@ ui <- fluidPage(
       # Input: Simple integer interval ----
       sliderInput("integer", "Integer:",
                   min = 0, max = 1000,
-                  value = 500),
+                  value = 400),
       
       # Input: Decimal interval with step value ----
       sliderInput("decimal", "Decimal:",
