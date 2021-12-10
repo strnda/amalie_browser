@@ -1,4 +1,7 @@
 library(shiny)
+library(dHRUM)
+
+
 
 # Define UI for slider demo app ----
 ui <- fluidPage(
