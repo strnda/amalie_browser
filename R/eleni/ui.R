@@ -37,19 +37,28 @@ ui <- fluidPage(
       ),
       column(2,
              br(),
-             actionButton("dhrumBP", "Run dHRUM for BP", class = "btn-success")
+             br(),
+             
              
       ),
       column(2,
              br(),
-             actionButton("dhrumKL", "Run dHRUM for KL", class = "btn-info"))
+             br(),
+      )
+    ),
+    fluidRow(
+      column(6,
+             actionButton("dhrumBP", "Run dHRUM for BP", class = "btn-success"),
+             actionButton("dhrumKL", "Run dHRUM for KL", class = "btn-info"),
+      )
     ),
     fluidRow(
         column(6,
                plotOutput("plotFDC"),
         ),
         column(6,
-               plotOutput("plotHydrograph")
+               plotOutput("plotHydrograph"),
+               downloadButton('export', "Download pdf")
         )
     )
    )
