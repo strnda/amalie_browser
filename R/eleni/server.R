@@ -2,7 +2,7 @@ library(data.table)
 library(RcppDE)
 library(dHRUM)
 
-BP_runDHRUM <- function(params) {
+BP_runDHRUM <- function(params, gwStor, swStor) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
   p_OBS=days/365.25
@@ -25,8 +25,8 @@ BP_runDHRUM <- function(params) {
     BPdhrus <- initdHruModel(nHrusBP,AreasBP,IdsHrus)
     setPTInputsToAlldHrus(BPdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
     calcPetToAllHrus(dHRUM_ptr = BPdhrus,50.1,"HAMON")
-    setGWtypeToAlldHrus(dHRUM_ptr = BPdhrus ,gwTypes=rep("LIN_RES", times=1),hruIds=IdsHrus)
-    setSoilStorTypeToAlldHrus(dHRUM_ptr = BPdhrus,soilTypes=rep("PDM",times= 1),hruIds=IdsHrus)
+    setGWtypeToAlldHrus(dHRUM_ptr = BPdhrus ,gwTypes=rep(gwStor, times=1),hruIds=IdsHrus)
+    setSoilStorTypeToAlldHrus(dHRUM_ptr = BPdhrus,soilTypes=rep(swStor,times= 1),hruIds=IdsHrus)
     setParsToDistdHRUM(BPdhrus, pars, F)
     # setParsToDistdHRUM(BPdhrus, ParBest, F)
     dta<-dHRUMrun(dHRUM_ptr = BPdhrus)
@@ -50,7 +50,7 @@ BP_runDHRUM <- function(params) {
 
 }
 
-KL_runDHRUM = function(params) {
+KL_runDHRUM = function(params, gwStor, swStor) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
   p_OBS=days/365.25
@@ -75,8 +75,8 @@ KL_runDHRUM = function(params) {
     KLdhrus <- initdHruModel(nHrusKL,AreasKL,IdsHrus)
     setPTInputsToAlldHrus(KLdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
     calcPetToAllHrus(dHRUM_ptr = KLdhrus,50.1,"HAMON")
-    setGWtypeToAlldHrus(dHRUM_ptr = KLdhrus ,gwTypes=rep("LIN_RES", times=1),hruIds=IdsHrus)
-    setSoilStorTypeToAlldHrus(dHRUM_ptr = KLdhrus,soilTypes=rep("PDM",times= 1),hruIds=IdsHrus)
+    setGWtypeToAlldHrus(dHRUM_ptr = KLdhrus ,gwTypes=rep(gwStor, times=1),hruIds=IdsHrus)
+    setSoilStorTypeToAlldHrus(dHRUM_ptr = KLdhrus,soilTypes=rep(swStor,times= 1),hruIds=IdsHrus)
     setParsToDistdHRUM(KLdhrus, pars, F)
     # setParsToDistdHRUM(BPdhrus, ParBest, F)
     dta<-dHRUMrun(dHRUM_ptr = KLdhrus)
@@ -132,7 +132,11 @@ server <- function(input, output) {
   output$values <- renderTable({
     sliderValues()
   })
-
+  
+  # observe({
+  #   print(input$gwStorage)
+  #   print(input$swStorage)
+  # })
   
   #output data from dHRUM
   outDta <- reactiveValues(data = NULL)
@@ -155,8 +159,7 @@ server <- function(input, output) {
                          TMEL = 0.0,
                          RETCAP = input$retcap,
                          CMIN =10)
-    
-    outDta$data <- BP_runDHRUM(parsDF)
+    outDta$data <- BP_runDHRUM(parsDF, input$gwStorage, input$swStorage)
   })
   
   observeEvent(input$dhrumKL, {
@@ -178,7 +181,7 @@ server <- function(input, output) {
                          RETCAP = input$retcap,
                          CMIN =10)
     
-    outDta$data <- KL_runDHRUM(parsDF)
+    outDta$data <- KL_runDHRUM(parsDF, input$gwStorage, input$swStorage)
   })
   
   

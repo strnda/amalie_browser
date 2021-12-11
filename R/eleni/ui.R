@@ -19,6 +19,10 @@ ui <- fluidPage(
     mainPanel(
       # Output: Table summarizing the values entered ----
       tableOutput("values"),
+      selectInput("gwStorage","Select Groundwater storage type", 
+                  choices=c("LIN_RES", "LINL_RES","LINBY_RES","EXP_RES","LIN_2SE","LIN_2PA","FLEX_RES")),
+      selectInput("swStorage","Select Soil storage type", 
+                  choices=c("PDM", "COLLIE_V2","NEW_ZEALAND","GR4J")),
       actionButton("dhrumBP", "Run dHRUM for BP", class = "btn-lg btn-success"),
       actionButton("dhrumKL", "Run dHRUM for KL"),
       hr(),
