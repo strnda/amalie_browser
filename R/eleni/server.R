@@ -2,6 +2,54 @@ library(data.table)
 library(RcppDE)
 library(dHRUM)
 
+runDHRUM <- function(params) {
+  # START put this to the environment global variables
+  days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
+  p_OBS=days/365.25
+  # RaBP = 96# odhad Martin Hanel
+  QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
+  A=4.7*1000*1000# plocha BP
+  RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
+  parsDF = params
+  filname2 = "~/tmp/dHRUM/dHRUM/Calibrations/Amalie/indata/KL_1960_01_01_noDate.txt"
+  TPdta = read.table(filname2)
+  prec=TPdta$V1
+  temp=TPdta$V2
+  nHrusBP <- 1
+  AreasBP <- 4.7*1000*1000
+  IdsHrus <- paste0("BP",seq(1:length(AreasBP)))
+  # end global variables
+  
+  
+  BP_run = function(pars = parsDF){
+    BPdhrus <- initdHruModel(nHrusBP,AreasBP,IdsHrus)
+    setPTInputsToAlldHrus(BPdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
+    calcPetToAllHrus(dHRUM_ptr = BPdhrus,50.1,"HAMON")
+    setGWtypeToAlldHrus(dHRUM_ptr = BPdhrus ,gwTypes=rep("LIN_RES", times=1),hruIds=IdsHrus)
+    setSoilStorTypeToAlldHrus(dHRUM_ptr = BPdhrus,soilTypes=rep("PDM",times= 1),hruIds=IdsHrus)
+    setParsToDistdHRUM(BPdhrus, pars, F)
+    # setParsToDistdHRUM(BPdhrus, ParBest, F)
+    dta<-dHRUMrun(dHRUM_ptr = BPdhrus)
+    dtaDF <- as.data.frame(dta$outDta)
+    names(dtaDF) <- dta$VarsNams
+    dtaDF <- as.data.table(dtaDF)
+    
+    dtaDF[,DTM:=as.Date(paste(YEAR,MONTH,DAY,sep="-"))]
+    
+    dtaDF[,YEAR:=NULL]
+    dtaDF[,MONTH:=NULL]
+    dtaDF[,DAY:=NULL]
+    dtaDF[,JDAY:=NULL]
+    
+    simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
+    
+    return (list(FDC = simBest, dta = copy(dtaDF)))
+  }
+  
+  BP_run(pars = parsDF);
+
+}
+
 server <- function(input, output) {
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
@@ -45,13 +93,6 @@ server <- function(input, output) {
   
   observeEvent(input$dhrum, {
     
-    # START put this to the environment global variables
-    days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
-    p_OBS=days/365.25
-    # RaBP = 96# odhad Martin Hanel
-    QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
-    A=4.7*1000*1000# plocha BP
-    RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
     parsDF = data.table( B_SOIL = 1,
                          C_MAX = input$c_max,
                          B_EVAP = 1,
@@ -68,42 +109,9 @@ server <- function(input, output) {
                          TMEL = 0.0,
                          RETCAP = input$retcap,
                          CMIN =10)
-    filname2 = "~/tmp/dHRUM/dHRUM/Calibrations/Amalie/indata/KL_1960_01_01_noDate.txt"
-    TPdta = read.table(filname2)
-    prec=TPdta$V1
-    temp=TPdta$V2
-    nHrusBP <- 1
-    AreasBP <- 4.7*1000*1000
-    IdsHrus <- paste0("BP",seq(1:length(AreasBP)))
-    # end global variables
     
     
-    BP_run = function(pars = parsDF){
-      BPdhrus <- initdHruModel(nHrusBP,AreasBP,IdsHrus)
-      setPTInputsToAlldHrus(BPdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
-      calcPetToAllHrus(dHRUM_ptr = BPdhrus,50.1,"HAMON")
-      setGWtypeToAlldHrus(dHRUM_ptr = BPdhrus ,gwTypes=rep("LIN_RES", times=1),hruIds=IdsHrus)
-      setSoilStorTypeToAlldHrus(dHRUM_ptr = BPdhrus,soilTypes=rep("PDM",times= 1),hruIds=IdsHrus)
-      setParsToDistdHRUM(BPdhrus, pars, F)
-      # setParsToDistdHRUM(BPdhrus, ParBest, F)
-      dta<-dHRUMrun(dHRUM_ptr = BPdhrus)
-      dtaDF <- as.data.frame(dta$outDta)
-      names(dtaDF) <- dta$VarsNams
-      dtaDF <- as.data.table(dtaDF)
-      
-      dtaDF[,DTM:=as.Date(paste(YEAR,MONTH,DAY,sep="-"))]
-      
-      dtaDF[,YEAR:=NULL]
-      dtaDF[,MONTH:=NULL]
-      dtaDF[,DAY:=NULL]
-      dtaDF[,JDAY:=NULL]
-      
-      simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
-      
-      return (list(FDC = simBest, dta = copy(dtaDF)))
-    }
-    
-    out = BP_run(pars = parsDF)
+    out = runDHRUM(parsDF)
     
     outDta$data <- out
   })
