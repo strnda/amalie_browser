@@ -19,7 +19,8 @@ ui <- fluidPage(
     mainPanel(
       # Output: Table summarizing the values entered ----
       tableOutput("values"),
-      actionButton("dhrum", "Run dHRUM", class = "btn-lg btn-success"),
+      actionButton("dhrumBP", "Run dHRUM for BP", class = "btn-lg btn-success"),
+      actionButton("dhrumKL", "Run dHRUM for KL"),
       hr(),
       plotOutput("plotFDC"),
       plotOutput("plotHydrograph")

@@ -50,6 +50,55 @@ BP_runDHRUM <- function(params) {
 
 }
 
+KL_runDHRUM = function(params) {
+  # START put this to the environment global variables
+  days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
+  p_OBS=days/365.25
+  # RaBP = 96# odhad Martin Hanel
+  #CHMU ZHU
+  QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
+  A=3.28*1000*1000# plocha KL
+  RmKL = QmKL * (3600*24) / A
+  
+  parsDF = params
+  filname2 = "./data/KL_1960_01_01_noDate.txt"
+  TPdta = read.table(filname2)
+  prec=TPdta$V1
+  temp=TPdta$V2
+  nHrusKL <- 1
+  AreasKL <- 3.28*1000*1000
+  IdsHrus <- paste0("KL",seq(1:length(AreasKL)))
+  # end global variables
+  
+  
+  KL_run = function(pars = parsDF){
+    KLdhrus <- initdHruModel(nHrusKL,AreasKL,IdsHrus)
+    setPTInputsToAlldHrus(KLdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
+    calcPetToAllHrus(dHRUM_ptr = KLdhrus,50.1,"HAMON")
+    setGWtypeToAlldHrus(dHRUM_ptr = KLdhrus ,gwTypes=rep("LIN_RES", times=1),hruIds=IdsHrus)
+    setSoilStorTypeToAlldHrus(dHRUM_ptr = KLdhrus,soilTypes=rep("PDM",times= 1),hruIds=IdsHrus)
+    setParsToDistdHRUM(KLdhrus, pars, F)
+    # setParsToDistdHRUM(BPdhrus, ParBest, F)
+    dta<-dHRUMrun(dHRUM_ptr = KLdhrus)
+    dtaDF <- as.data.frame(dta$outDta)
+    names(dtaDF) <- dta$VarsNams
+    dtaDF <- as.data.table(dtaDF)
+    
+    dtaDF[,DTM:=as.Date(paste(YEAR,MONTH,DAY,sep="-"))]
+    
+    dtaDF[,YEAR:=NULL]
+    dtaDF[,MONTH:=NULL]
+    dtaDF[,DAY:=NULL]
+    dtaDF[,JDAY:=NULL]
+    
+    simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
+    
+    return (list(FDC = simBest, dta = copy(dtaDF)))
+  }
+  
+  KL_run(pars = parsDF)
+}
+
 server <- function(input, output) {
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
@@ -88,7 +137,7 @@ server <- function(input, output) {
   #output data from dHRUM
   outDta <- reactiveValues(data = NULL)
   
-  observeEvent(input$dhrum, {
+  observeEvent(input$dhrumBP, {
     
     parsDF = data.table( B_SOIL = 1,
                          C_MAX = input$c_max,
@@ -108,6 +157,28 @@ server <- function(input, output) {
                          CMIN =10)
     
     outDta$data <- BP_runDHRUM(parsDF)
+  })
+  
+  observeEvent(input$dhrumKL, {
+    
+    parsDF = data.table( B_SOIL = 1,
+                         C_MAX = input$c_max,
+                         B_EVAP = 1,
+                         KS = input$ks,
+                         KF = input$kf,
+                         ADIV = input$adiv,
+                         CDIV = input$cdiv,
+                         SDIV = input$sdiv,
+                         CAN_ST = input$cans_st,
+                         STEM_ST = input$stem_st,
+                         CSDIV = 0.08,
+                         TETR = 0,
+                         DDFA = input$ddfa,
+                         TMEL = 0.0,
+                         RETCAP = input$retcap,
+                         CMIN =10)
+    
+    outDta$data <- KL_runDHRUM(parsDF)
   })
   
   
