@@ -2,7 +2,7 @@ library(data.table)
 library(RcppDE)
 library(dHRUM)
 
-runDHRUM <- function(params) {
+BP_runDHRUM <- function(params) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
   p_OBS=days/365.25
@@ -11,10 +11,10 @@ runDHRUM <- function(params) {
   A=4.7*1000*1000# plocha BP
   RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
   parsDF = params
-  filname2 = "~/tmp/dHRUM/dHRUM/Calibrations/Amalie/indata/KL_1960_01_01_noDate.txt"
+  filname2 = "./data/BP_1960_01_01.txt"
   TPdta = read.table(filname2)
-  prec=TPdta$V1
-  temp=TPdta$V2
+  prec=TPdta$V2
+  temp=TPdta$V1
   nHrusBP <- 1
   AreasBP <- 4.7*1000*1000
   IdsHrus <- paste0("BP",seq(1:length(AreasBP)))
@@ -83,12 +83,9 @@ server <- function(input, output) {
   output$values <- renderTable({
     sliderValues()
   })
+
   
-  #x1 <- reactive(input$c_max)
-  ####
-  # run dhrum
-  
-  #v <- reactiveValues(data = NULL)
+  #output data from dHRUM
   outDta <- reactiveValues(data = NULL)
   
   observeEvent(input$dhrum, {
@@ -110,24 +107,35 @@ server <- function(input, output) {
                          RETCAP = input$retcap,
                          CMIN =10)
     
-    
-    out = runDHRUM(parsDF)
-    
-    outDta$data <- out
+    outDta$data <- BP_runDHRUM(parsDF)
   })
   
   
   output$plotFDC <- renderPlot({
     if (is.null(outDta$data)) return()
-    plot = plot(days,RmBP, pch=19, ylim= range(c(outDta$data$FDC,RmBP)), ylab="Qm [mm/den]", xlab="Day")
-    plot = plot + points(days,outDta$data$FDC,col="red",pch=19)
+    
+    plot = plot(days,RmBP, 
+                pch = 19, 
+                ylim = range(c(outDta$data$FDC,RmBP)), 
+                ylab ="Qm [mm/den]", 
+                xlab="Day")
+    plot = plot + points(days, 
+                         outDta$data$FDC, 
+                         col="red", 
+                         pch=19)
     grid()
   })
   
   output$plotHydrograph <- renderPlot({
     if (is.null(outDta$data)) return()
-    plot = plot(outDta$data$dta$DTM,outDta$data$dta$TOTR, type="l", xlab="Date", ylab="Q [mm/den]")
-    plot = plot + lines(outDta$data$dta$DTM,outDta$data$dta$BASF,col='red')
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$TOTR,
+                type = "l", xlab = "Date", 
+                ylab="Q [mm/den]")
+    plot = plot + lines(outDta$data$dta$DTM,
+                        outDta$data$dta$BASF,
+                        col='red')
     grid()
   })
   
