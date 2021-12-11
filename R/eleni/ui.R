@@ -58,7 +58,7 @@ ui <- fluidPage(
         ),
         column(6,
                plotOutput("plotHydrograph"),
-               downloadButton('export', "Download pdf")
+               #downloadButton('export', "Download pdf")
         )
     )
    )
