@@ -79,13 +79,12 @@ server <- function(input, output) {
     plot = plot(days,RmBP, 
                 pch = 19, 
                 ylim = range(c(outDta$data$FDC,RmBP)), 
-                ylab ="Qm [mm/den]", 
+                ylab ="Qm [mm/day]", 
                 xlab="Day")
     plot = plot + points(days, 
                          outDta$data$FDC, 
                          col="red", 
                          pch=19)
-    grid()
     
   })
   
@@ -96,11 +95,34 @@ server <- function(input, output) {
     plot = plot(outDta$data$dta$DTM,
                 outDta$data$dta$TOTR,
                 type = "l", xlab = "Date", 
-                ylab="Q [mm/den]")
+                ylab="Q [mm/day]")
     plot = plot + lines(outDta$data$dta$DTM,
                         outDta$data$dta$BASF,
                         col='red')
-    grid()
   })
   
+  output$plotTOTR <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$TOTR, type="l", xlab="Date", ylab="Total Runoff [mm/day]")
+    
+  })
+  
+  output$plotBASF <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$BASF, type="l", xlab="Date", ylab="Baseflow [mm/day]")
+  })
+  
+  output$plotDIRR <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$DIRR, type="l", xlab="Date", ylab="Direct Runoff [mm/day]")
+  })
 }

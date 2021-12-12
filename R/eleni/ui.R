@@ -108,7 +108,13 @@ ui <- fluidPage(
                             conditionalPanel(condition = "input.PlotType == 'Model performance'",
                                              column(width = 09,
                                                     plotOutput("plotFDC", width = "100%"),
-                                                    plotOutput("plotHydrograph", width = "100%")))
+                                                    plotOutput("plotHydrograph", width = "100%"))),
+                            conditionalPanel(condition = "input.PlotType == 'Time series'",
+                                             column(width = 09,
+                                                    plotOutput("plotTOTR", width = "100%"),
+                                                    plotOutput("plotBASF", width = "100%"),
+                                                    plotOutput("plotDIRR", width = "100%"))),
+                            
                             
                           )
                   
