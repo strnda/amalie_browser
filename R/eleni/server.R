@@ -159,7 +159,7 @@ server <- function(input, output) {
                          TMEL = 0.0,
                          RETCAP = input$retcap,
                          CMIN =10)
-    outDta$data <- BP_runDHRUM(parsDF, input$gwStorage, input$swStorage)
+    outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
   })
   
   observeEvent(input$dhrumKL, {
@@ -181,7 +181,7 @@ server <- function(input, output) {
                          RETCAP = input$retcap,
                          CMIN =10)
     
-    outDta$data <- KL_runDHRUM(parsDF, input$gwStorage, input$swStorage)
+    outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
   })
   
   
