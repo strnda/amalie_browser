@@ -111,6 +111,7 @@ server <- function(input, output) {
                "STEM_ST",
                "CDIV",
                "SDIV",
+               "CSDIV",
                "KS",
                "KF",
                "ADIV"),
@@ -121,6 +122,7 @@ server <- function(input, output) {
                              input$stem_st,
                              input$cdiv,
                              input$sdiv,
+                             input$csdiv,
                              input$ks,
                              input$kf,
                              input$adiv)),
@@ -143,9 +145,9 @@ server <- function(input, output) {
   
   observeEvent(input$dhrumBP, {
     
-    parsDF = data.table( B_SOIL = 1,
+    parsDF = data.table( B_SOIL = input$b_soil,
                          C_MAX = input$c_max,
-                         B_EVAP = 1,
+                         B_EVAP = input$b_evap,
                          KS = input$ks,
                          KF = input$kf,
                          ADIV = input$adiv,
@@ -153,20 +155,21 @@ server <- function(input, output) {
                          SDIV = input$sdiv,
                          CAN_ST = input$cans_st,
                          STEM_ST = input$stem_st,
-                         CSDIV = 0.08,
-                         TETR = 0,
+                         CSDIV = input$csdiv,
+                         TETR = input$tetr,
                          DDFA = input$ddfa,
-                         TMEL = 0.0,
+                         TMEL = input$tmel,
                          RETCAP = input$retcap,
-                         CMIN =10)
+                         CMIN = input$c_min
+                         )
     outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
   })
   
   observeEvent(input$dhrumKL, {
     
-    parsDF = data.table( B_SOIL = 1,
+    parsDF = data.table( B_SOIL = input$b_soil,
                          C_MAX = input$c_max,
-                         B_EVAP = 1,
+                         B_EVAP = input$b_evap,
                          KS = input$ks,
                          KF = input$kf,
                          ADIV = input$adiv,
@@ -174,12 +177,13 @@ server <- function(input, output) {
                          SDIV = input$sdiv,
                          CAN_ST = input$cans_st,
                          STEM_ST = input$stem_st,
-                         CSDIV = 0.08,
-                         TETR = 0,
+                         CSDIV = input$csdiv,
+                         TETR = input$tetr,
                          DDFA = input$ddfa,
-                         TMEL = 0.0,
+                         TMEL = input$tmel,
                          RETCAP = input$retcap,
-                         CMIN =10)
+                         CMIN = input$c_min
+                         )
     
     outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
   })
