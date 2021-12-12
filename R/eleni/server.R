@@ -63,12 +63,15 @@ server <- function(input, output) {
                          )
     if(input$basin == "BP basin") {
       outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
+      outDta$statistics <- calculation_BP(outDta$data)
       
     }
     
     if(input$basin == "KL basin") {
       outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
+      outDta$statistics <- calculation_KL(outDta$data)
     }
+    
     
   })
   
@@ -91,9 +94,13 @@ server <- function(input, output) {
     
     if (is.null(outDta$data)) return()
     
+    # ggplotly(ggplot(data = sliderValues(),
+    #                 mapping = aes_string(x = outDta$data$dta$DTM, y = outDta$data$dta$TOTR)) +
+    #            geom_line()) %>% layout(xaxis = list(rangeslider = list(type = "date")))
+    # 
     plot = plot(outDta$data$dta$DTM,
                 outDta$data$dta$TOTR,
-                type = "l", xlab = "Date", 
+                type = "l", xlab = "Date",
                 ylab="Q [mm/day]")
     plot = plot + lines(outDta$data$dta$DTM,
                         outDta$data$dta$BASF,
@@ -190,5 +197,6 @@ server <- function(input, output) {
                 outDta$data$dta$EVBS, type="l", xlab="Date", ylab="Bare soil Evapotranspiration")
   })
   
+  output$table <- renderTable(outDta$statistics)
   
 }

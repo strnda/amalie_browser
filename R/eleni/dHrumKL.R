@@ -26,6 +26,8 @@ calculation_KL <- function(out) {
   outSimDT <- as.data.table(outSimulation)
   Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
   #plot(Annualmean$meanTOTR, type = "l")
+  
+  Stat
 }
 
 KL_runDHRUM = function(params, gwStor, swStor) {

@@ -26,6 +26,8 @@ calculation_BP <- function(out) {
   outSimDT <- as.data.table(outSimulation)
   Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
   #plot(Annualmean$meanTOTR, type = "l")
+  
+  Stat
 }
 
 BP_runDHRUM <- function(params, gwStor, swStor) {
@@ -71,10 +73,7 @@ BP_runDHRUM <- function(params, gwStor, swStor) {
     
     return (list(FDC = simBest, dta = copy(dtaDF)))
   }
-  
   calculation_BP(BP_run(pars = parsDF))
-  
   BP_run(pars = parsDF)
-  
   
 }
