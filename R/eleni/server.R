@@ -88,6 +88,7 @@ server <- function(input, output) {
     grid()
     
   })
+  
   output$plotHydrograph <- renderPlot({
     
     if (is.null(outDta$data)) return()
@@ -103,4 +104,3 @@ server <- function(input, output) {
   })
   
 }
-

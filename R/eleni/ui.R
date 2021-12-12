@@ -78,9 +78,40 @@ ui <- fluidPage(
                              # )
                   
                 ),
-                mainPanel(width = 5,
-                  plotOutput("plotFDC"),
-                  plotOutput("plotHydrograph")
+                mainPanel(width = 8,
+                          fluidRow(
+                            column(width = 3,
+                                   selectInput("PlotType", label = "Choose a plot:",
+                                               choices = c("Time series", "Model performance", "State variables", "Evapotranspiration"))
+                            ),
+                            column(width = 4, offset = 1,
+                                   sliderInput("Period", label = "Select the time window:",
+                                               min = 0,
+                                               max = 10,
+                                               value = 5
+                                               # timeFormat = "%F",
+                                               # timezone = "+0000",
+                                               # animate = FALSE)
+                                   )
+                            ),
+                            column(width = 03,
+                                   div(tableOutput("values")), style = "font-size:90%",
+                                   #conditionalPanel(condition = "input.PlotType == 'Flow time series' || input.PlotType == 'Model diagram'",
+            
+                                   downloadButton("DownloadPlot", label = "Download plot as png",
+                                                  style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
+                                   #)
+                                   
+                            )
+                          ),
+                          fluidRow(
+                            conditionalPanel(condition = "input.PlotType == 'Model performance'",
+                                             column(width = 09,
+                                                    plotOutput("plotFDC", width = "100%"),
+                                                    plotOutput("plotHydrograph", width = "100%")))
+                            
+                          )
+                  
                 )
     
   )
