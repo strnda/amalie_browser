@@ -95,11 +95,12 @@ ui <- fluidPage(
                                    )
                             ),
                             column(width = 03,
-                                   div(tableOutput("values")), style = "font-size:90%",
+                                   #div(tableOutput("values")), style = "font-size:90%",
                                    #conditionalPanel(condition = "input.PlotType == 'Flow time series' || input.PlotType == 'Model diagram'",
             
                                    downloadButton("DownloadPlot", label = "Download plot as png",
-                                                  style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
+                                                  style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;"),
+                                   
                                    #)
                                    
                             )
@@ -128,6 +129,9 @@ ui <- fluidPage(
                                                     plotOutput("plotEVBS", width = "100%"))),
                             
                             
+                          ),
+                          fluidRow(
+                            tableOutput("table")
                           )
                   
                 )

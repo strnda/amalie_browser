@@ -7,10 +7,20 @@ calculation_KL <- function(out) {
   
   # Kling-Gupta Efficiency
   KGEout <- KGE(outSimulation$TOTR, outBenchMark$TOTR)
+  KGEoutSQRT <- KGE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  
   # Nash-Sutcliffe Efficiency
   NSEout <- NSE(outSimulation$TOTR, outBenchMark$TOTR)
+  NSEoutSQRT <- NSE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
   # Mean Absolute Error
   MAEout <- mae(outSimulation$TOTR, outBenchMark$TOTR)
+  MAEoutSQRT <- mae(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  
+  # Table
+  nm <- c("NSE(Q)", "NSE(sqrt(Q))", "KGE(Q)", "KGE(sqrt(Q))", "MAE(Q)", "MAE(sqrt(Q))")
+  val <- c(NSEout, NSEoutSQRT, KGEout, KGEoutSQRT, MAEout, MAEoutSQRT)
+  Stat <-  data.frame(nm, val)
+  names(Stat) <- c("Criterion","Qsim")
   
   # Annual Total runoff
   outSimDT <- as.data.table(outSimulation)

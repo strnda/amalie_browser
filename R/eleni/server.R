@@ -63,15 +63,14 @@ server <- function(input, output) {
                          )
     if(input$basin == "BP basin") {
       outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
+      
     }
     
     if(input$basin == "KL basin") {
       outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
     }
     
-    
   })
-  
   
   output$plotFDC <- renderPlot({
     if (is.null(outDta$data)) return()
