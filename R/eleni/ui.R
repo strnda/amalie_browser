@@ -119,6 +119,13 @@ ui <- fluidPage(
                                                     plotOutput("plotSOIS", width = "100%"),
                                                     plotOutput("plotGROS", width = "100%"),
                                                     plotOutput("plotSURS", width = "100%"))),
+                            conditionalPanel(condition = "input.PlotType == 'Evapotranspiration'",
+                                             column(width = 09,
+                                                    plotOutput("plotPET", width = "100%"),
+                                                    plotOutput("plotAET", width = "100%"),
+                                                    plotOutput("plotEVAC", width = "100%"),
+                                                    plotOutput("plotEVAS", width = "100%"),
+                                                    plotOutput("plotEVBS", width = "100%"))),
                             
                             
                           )

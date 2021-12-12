@@ -150,4 +150,46 @@ server <- function(input, output) {
     plot = plot(outDta$data$dta$DTM,
                 outDta$data$dta$SURS, type="l", xlab="Date", ylab="Surface retention")
   })
+  
+  output$plotPET <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$PET, type="l", xlab="Date", ylab="Potential Evapotranspiration")
+  })
+  
+  output$plotAET <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$AET, type="l", xlab="Date", ylab="Actual Evapotranspiration")
+  })
+  
+  output$plotEVAC <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$EVAC, type="l", xlab="Date", ylab="Canopy Evaporation")
+  })
+  
+  output$plotEVAS <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$EVAS, type="l", xlab="Date", ylab="Stem Evaporation")
+  })
+  
+  output$plotEVBS <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$EVBS, type="l", xlab="Date", ylab="Bare soil Evapotranspiration")
+  })
+  
+  
 }
