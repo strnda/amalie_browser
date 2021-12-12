@@ -64,12 +64,11 @@ ui <- fluidPage(
                       )),
                   ),
                   tableOutput("values"),
-                  actionButton("dhrumBP", "Run dHRUM for BP", class = "btn-success"),
-                  actionButton("dhrumKL", "Run dHRUM for KL", class = "btn-info"),
+                  actionButton("runDhrum", "Run dHRUM", class = "btn-success")
   ),
   column(4,
-         plotOutput("plotFDC"),
-         plotOutput("plotHydrograph")
+         plotOutput("plotBP"),
+         plotOutput("plotKL")
          
     )
   )
