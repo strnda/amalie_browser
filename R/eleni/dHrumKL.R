@@ -1,5 +1,23 @@
 library(hydroGOF)
 
+calculation_KL <- function(out) {
+  Input <- readRDS("./data/KL_benchmark_LUMPED.rds")
+  outBenchMark <- Input$dta
+  outSimulation <- out$dta
+  
+  # Kling-Gupta Efficiency
+  KGEout <- KGE(outSimulation$TOTR, outBenchMark$TOTR)
+  # Nash-Sutcliffe Efficiency
+  NSEout <- NSE(outSimulation$TOTR, outBenchMark$TOTR)
+  # Mean Absolute Error
+  MAEout <- mae(outSimulation$TOTR, outBenchMark$TOTR)
+  
+  # Annual Total runoff
+  outSimDT <- as.data.table(outSimulation)
+  Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
+  #plot(Annualmean$meanTOTR, type = "l")
+}
+
 KL_runDHRUM = function(params, gwStor, swStor) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
@@ -46,21 +64,8 @@ KL_runDHRUM = function(params, gwStor, swStor) {
     return (list(FDC = simBest, dta = copy(dtaDF)))
   }
   
+  calculation_KL(KL_run(pars = parsDF))
+  
   KL_run(pars = parsDF)
   
-  Input <- readRDS("./data/KL_benchmark_LUMPED.rds")
-  outBenchMark <- Input$dta
-  outSimulation <- out$dta
-  
-  # Kling-Gupta Efficiency
-  KGEout <- KGE(outSimulation$TOTR, outBenchMark$TOTR)
-  # Nash-Sutcliffe Efficiency
-  NSEout <- NSE(outSimulation$TOTR, outBenchMark$TOTR)
-  # Mean Absolute Error
-  MAEout <- mae(outSimulation$TOTR, outBenchMark$TOTR)
-  
-  # Annual Total runoff
-  outSimDT <- as.data.table(outSimulation)
-  Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
-  #plot(Annualmean$meanTOTR, type = "l")
 }
