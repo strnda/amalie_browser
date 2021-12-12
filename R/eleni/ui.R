@@ -114,6 +114,11 @@ ui <- fluidPage(
                                                     plotOutput("plotTOTR", width = "100%"),
                                                     plotOutput("plotBASF", width = "100%"),
                                                     plotOutput("plotDIRR", width = "100%"))),
+                            conditionalPanel(condition = "input.PlotType == 'State variables'",
+                                             column(width = 09,
+                                                    plotOutput("plotSOIS", width = "100%"),
+                                                    plotOutput("plotGROS", width = "100%"),
+                                                    plotOutput("plotSURS", width = "100%"))),
                             
                             
                           )

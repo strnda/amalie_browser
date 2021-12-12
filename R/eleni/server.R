@@ -125,4 +125,29 @@ server <- function(input, output) {
     plot = plot(outDta$data$dta$DTM,
                 outDta$data$dta$DIRR, type="l", xlab="Date", ylab="Direct Runoff [mm/day]")
   })
+  
+  output$plotSOIS <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$SOIS, type="l", xlab="Date", ylab="Soil storage")
+    
+  })
+  
+  output$plotGROS <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$GROS, type="l", xlab="Date", ylab="Groundwater storage")
+  })
+  
+  output$plotSURS <- renderPlot({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$SURS, type="l", xlab="Date", ylab="Surface retention")
+  })
 }
