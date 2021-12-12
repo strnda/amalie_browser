@@ -36,9 +36,9 @@ server <- function(input, output) {
   })
   
   # Show the values in an HTML table ----
-  output$values <- renderTable({
-    sliderValues()
-  })
+  # output$values <- renderTable({
+  #   sliderValues()
+  # })
   
   outDta <- reactiveValues(data = NULL)
   
@@ -61,37 +61,43 @@ server <- function(input, output) {
                          RETCAP = input$retcap,
                          CMIN = input$c_min
                          )
+    if(input$basin == "BP basin") {
+      outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
+    }
     
-    outDta$dataBP <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
-    outDta$dataKL <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
+    if(input$basin == "KL basin") {
+      outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
+    }
+    
+    
   })
   
   
-  output$plotBP <- renderPlot({
-    if (is.null(outDta$dataBP)) return()
+  output$plotFDC <- renderPlot({
+    if (is.null(outDta$data)) return()
     
     plot = plot(days,RmBP, 
                 pch = 19, 
-                ylim = range(c(outDta$dataBP$FDC,RmBP)), 
+                ylim = range(c(outDta$data$FDC,RmBP)), 
                 ylab ="Qm [mm/den]", 
                 xlab="Day")
     plot = plot + points(days, 
-                         outDta$dataBP$FDC, 
+                         outDta$data$FDC, 
                          col="red", 
                          pch=19)
     grid()
     
   })
-  output$plotKL <- renderPlot({
+  output$plotHydrograph <- renderPlot({
     
-    if (is.null(outDta$dataKL)) return()
+    if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$dataKL$dta$DTM,
-                outDta$dataKL$dta$TOTR,
+    plot = plot(outDta$data$dta$DTM,
+                outDta$data$dta$TOTR,
                 type = "l", xlab = "Date", 
                 ylab="Q [mm/den]")
-    plot = plot + lines(outDta$dataKL$dta$DTM,
-                        outDta$dataKL$dta$BASF,
+    plot = plot + lines(outDta$data$dta$DTM,
+                        outDta$data$dta$BASF,
                         col='red')
     grid()
   })
