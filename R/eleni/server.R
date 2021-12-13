@@ -34,12 +34,25 @@ server <- function(input, output) {
                              input$adiv)),
       stringsAsFactors = FALSE)
     
+   
+    
   })
   
   # Show the values in an HTML table ----
   # output$values <- renderTable({
   #   sliderValues()
   # })
+  df <- reactive ({
+    data.frame(
+      Period = c("Start Date","End Date"),
+      Dates = c(as.Date(min(input$date_range)), as.Date(max(input$date_range)))
+      )
+    
+  })
+  
+  output$date_ranges <- renderTable({
+    df()
+  })
   
   outDta <- reactiveValues(data = NULL)
   

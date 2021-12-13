@@ -1,11 +1,12 @@
 library(shiny)
 library(shinythemes)
+library(lubridate)
 
 ui <- fluidPage(
   titlePanel("Modeling"),
   windowTitle = "dHRUM",
   sidebarLayout(position = "left",
-                sidebarPanel(width = 4,
+                sidebarPanel(width = 3,
                              h4("Choose a basin:"),
                              fluidRow(
                                column(width = 12, selectInput("basin", label = NULL, choices = c("BP basin","KL basin")))
@@ -56,54 +57,62 @@ ui <- fluidPage(
                                   )
                                ),
                                style = "padding-left: 10px;",
-                               actionButton("runDhrum", "Run dHRUM", class = "btn-success")
+                               actionButton("runDhrum", "Run dHRUM", class = "btn-success"),
+                               
                              )
                   
                 ),
-                mainPanel(width = 8,
+                mainPanel(width = 9,
                           fluidRow(
-                            column(width = 3,
+                            column(width = 4,
                                    selectInput("PlotType", label = "Choose a plot:",
                                                choices = c("Time series", "Model performance", "State variables", "Evapotranspiration"))
                             ),
-                            column(width = 4, offset = 1,
+                            column(width = 5, 
                                    sliderInput("date_range", 
                                                "Choose Date Range:", 
                                                min = as.Date("1960-01-01"), max = as.Date("2016-12-30"), 
-                                               value = c(as.Date("2006-02-25"), Sys.Date())
+                                               value = c(as.Date("1960-01-01"), as.Date("2016-12-30"))
                                    ),
-                                   div(verbatimTextOutput("out1"), style = "width: 300px;")
-                            )
+                                   
+                            ),
+                            column(width = 3,
+                                   tableOutput("date_ranges")
+                                   
+                                   )
                           ),
                           fluidRow(
-                            conditionalPanel(condition = "input.PlotType == 'Model performance'",
-                                             column(width = 09,
-                                                    plotOutput("plotFDC", width = "100%"),
-                                                    plotOutput("plotHydrograph", width = "100%"),
-                                                    plotOutput("plotAnnualMean", width = "100%"))),
-                            conditionalPanel(condition = "input.PlotType == 'Time series'",
-                                             column(width = 09,
-                                                    plotOutput("plotTOTR", width = "100%"),
-                                                    plotOutput("plotBASF", width = "100%"),
-                                                    plotOutput("plotDIRR", width = "100%"))),
-                            conditionalPanel(condition = "input.PlotType == 'State variables'",
-                                             column(width = 09,
-                                                    plotOutput("plotSOIS", width = "100%"),
-                                                    plotOutput("plotGROS", width = "100%"),
-                                                    plotOutput("plotSURS", width = "100%"))),
-                            conditionalPanel(condition = "input.PlotType == 'Evapotranspiration'",
-                                             column(width = 09,
-                                                    plotOutput("plotPET", width = "100%"),
-                                                    plotOutput("plotAET", width = "100%"),
-                                                    plotOutput("plotEVBS", width = "100%"),
-                                                    dygraphOutput("plotAnnualMeanEVA", width = "100%"))),
-                            tableOutput("table"),
-                            conditionalPanel(condition = "output.table",
-                                             downloadButton("DownloadPlot", label = "Download plot as png",
-                                                            style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
-                                             )
+                            column(width = 9,
+                                   conditionalPanel(condition = "input.PlotType == 'Model performance'",
+                                                    column(width = 09,
+                                                           plotOutput("plotFDC", width = "100%"),
+                                                           plotOutput("plotHydrograph", width = "100%"),
+                                                           plotOutput("plotAnnualMean", width = "100%"))),
+                                   conditionalPanel(condition = "input.PlotType == 'Time series'",
+                                                    column(width = 09,
+                                                           plotOutput("plotTOTR", width = "100%"),
+                                                           plotOutput("plotBASF", width = "100%"),
+                                                           plotOutput("plotDIRR", width = "100%"))),
+                                   conditionalPanel(condition = "input.PlotType == 'State variables'",
+                                                    column(width = 09,
+                                                           plotOutput("plotSOIS", width = "100%"),
+                                                           plotOutput("plotGROS", width = "100%"),
+                                                           plotOutput("plotSURS", width = "100%"))),
+                                   conditionalPanel(condition = "input.PlotType == 'Evapotranspiration'",
+                                                    column(width = 09,
+                                                           plotOutput("plotPET", width = "100%"),
+                                                           plotOutput("plotAET", width = "100%"),
+                                                           plotOutput("plotEVBS", width = "100%"),
+                                                           dygraphOutput("plotAnnualMeanEVA", width = "100%")))
+                                   ),
+                            column(width = 3,
+                                   tableOutput("table"),
+                                   conditionalPanel(condition = "output.table",
+                                                    downloadButton("DownloadPlot", label = "Download plot as png",
+                                                                   style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
+                                   )
                             
-                            
+                            )
                           )
                   
                 )
