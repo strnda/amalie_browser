@@ -3,9 +3,12 @@ library(hydroGOF)
 annual_mean_BP <- function(outSimulation) {
   # Annual Total runoff
   outSimDT <- as.data.table(outSimulation)
-  Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
+  Annualmean <-
+    outSimDT[, ':=' (MONTH = month(DTM), YEAR = year(DTM))][, .(meanTOTR =
+                                                                  mean(TOTR)), by = .(MONTH, YEAR)]
+  out = Annualmean[, DTA := as.yearmon(paste(YEAR, MONTH), "%Y %m")][, ':='(YEAR = NULL, MONTH = NULL)]
   #plot(Annualmean$meanTOTR, type = "l")
-  Annualmean
+  out
 }
 
 calculation_BP <- function(out) {

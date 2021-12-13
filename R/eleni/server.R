@@ -42,6 +42,11 @@ server <- function(input, output) {
   
   outDta <- reactiveValues(data = NULL)
   
+  # output$out1 <- renderText({
+  #   seq(from = input$date_range[1], to = input$date_range[1])
+  #   #as.Date(input$date_range[1]):as.Date(input$date_range[2])
+  # })
+  
   observeEvent(input$runDhrum, {
     
     parsDF = data.table( B_SOIL = input$b_soil,
@@ -71,6 +76,7 @@ server <- function(input, output) {
     if(input$basin == "KL basin") {
       outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
       outDta$statistics <- calculation_KL(outDta$data)
+      outDta$annualMean <- annual_mean_KL(outDta$data$dta)
     }
     
     
@@ -111,7 +117,7 @@ server <- function(input, output) {
   output$plotAnnualMean <- renderPlot({
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$annualMean$meanTOTR, type = "l", xlab="Months", ylab="Annual Mean")
+    plot = plot(outDta$annualMean$DTA, outDta$annualMean$meanTOTR, type = "l", xlab="Year", ylab="Annual Mean")
     
   })
   

@@ -71,7 +71,8 @@ ui <- fluidPage(
                                                "Choose Date Range:", 
                                                min = as.Date("1960-01-01"), max = as.Date("2016-12-30"), 
                                                value = c(as.Date("2006-02-25"), Sys.Date())
-                                   )
+                                   ),
+                                   div(verbatimTextOutput("out1"), style = "width: 300px;")
                             )
                           ),
                           fluidRow(
