@@ -14,7 +14,7 @@ ui <- fluidPage(
                              fluidRow(
                                tabsetPanel(
                                  tabPanel(
-                                   "Direct Runoff",
+                                   "Total Runoff",
                                    fluid = F,
                                        width = 12,
                                        sliderInput("ks", "KS:", min = 0, max = 1, value = 0.001, step = 0.001),
@@ -67,13 +67,10 @@ ui <- fluidPage(
                                                choices = c("Time series", "Model performance", "State variables", "Evapotranspiration"))
                             ),
                             column(width = 4, offset = 1,
-                                   sliderInput("Period", label = "Select the time window:",
-                                               min = 0,
-                                               max = 10,
-                                               value = 5
-                                               # timeFormat = "%F",
-                                               # timezone = "+0000",
-                                               # animate = FALSE)
+                                   sliderInput("date_range", 
+                                               "Choose Date Range:", 
+                                               min = as.Date("1960-01-01"), max = as.Date("2016-12-30"), 
+                                               value = c(as.Date("2006-02-25"), Sys.Date())
                                    )
                             )
                           ),
@@ -81,7 +78,8 @@ ui <- fluidPage(
                             conditionalPanel(condition = "input.PlotType == 'Model performance'",
                                              column(width = 09,
                                                     plotOutput("plotFDC", width = "100%"),
-                                                    plotOutput("plotHydrograph", width = "100%"))),
+                                                    plotOutput("plotHydrograph", width = "100%"),
+                                                    plotOutput("plotAnnualMean", width = "100%"))),
                             conditionalPanel(condition = "input.PlotType == 'Time series'",
                                              column(width = 09,
                                                     plotOutput("plotTOTR", width = "100%"),
@@ -96,8 +94,6 @@ ui <- fluidPage(
                                              column(width = 09,
                                                     plotOutput("plotPET", width = "100%"),
                                                     plotOutput("plotAET", width = "100%"),
-                                                    plotOutput("plotEVAC", width = "100%"),
-                                                    plotOutput("plotEVAS", width = "100%"),
                                                     plotOutput("plotEVBS", width = "100%"))),
                             tableOutput("table"),
                             downloadButton("DownloadPlot", label = "Download plot as png",

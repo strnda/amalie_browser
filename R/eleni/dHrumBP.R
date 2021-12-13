@@ -1,5 +1,13 @@
 library(hydroGOF)
 
+annual_mean_BP <- function(outSimulation) {
+  # Annual Total runoff
+  outSimDT <- as.data.table(outSimulation)
+  Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
+  #plot(Annualmean$meanTOTR, type = "l")
+  Annualmean
+}
+
 calculation_BP <- function(out) {
   Input <- readRDS("./data/BP_benchmark_LUMPED.rds")
   outBenchMark <- Input$dta
@@ -21,11 +29,6 @@ calculation_BP <- function(out) {
   val <- c(NSEout, NSEoutSQRT, KGEout, KGEoutSQRT, MAEout, MAEoutSQRT)
   Stat <-  data.frame(nm, val)
   names(Stat) <- c("Criterion","Qsim")
-  
-  # Annual Total runoff
-  outSimDT <- as.data.table(outSimulation)
-  Annualmean <- outSimDT[ ,':=' (MONTH=month(DTM), YEAR = year(DTM))][,.(meanTOTR =mean(TOTR)), by= .(MONTH,YEAR) ] 
-  #plot(Annualmean$meanTOTR, type = "l")
   
   Stat
 }
@@ -73,7 +76,7 @@ BP_runDHRUM <- function(params, gwStor, swStor) {
     
     return (list(FDC = simBest, dta = copy(dtaDF)))
   }
-  calculation_BP(BP_run(pars = parsDF))
+  
   BP_run(pars = parsDF)
   
 }

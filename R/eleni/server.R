@@ -64,6 +64,7 @@ server <- function(input, output) {
     if(input$basin == "BP basin") {
       outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
       outDta$statistics <- calculation_BP(outDta$data)
+      outDta$annualMean <- annual_mean_BP(outDta$data$dta)
       
     }
     
@@ -105,6 +106,13 @@ server <- function(input, output) {
     plot = plot + lines(outDta$data$dta$DTM,
                         outDta$data$dta$BASF,
                         col='red')
+  })
+  
+  output$plotAnnualMean <- renderPlot({
+    if (is.null(outDta$data)) return()
+    
+    plot = plot(outDta$annualMean$meanTOTR, type = "l", xlab="Months", ylab="Annual Mean")
+    
   })
   
   output$plotTOTR <- renderPlot({
@@ -173,21 +181,6 @@ server <- function(input, output) {
                 outDta$data$dta$AET, type="l", xlab="Date", ylab="Actual Evapotranspiration")
   })
   
-  output$plotEVAC <- renderPlot({
-    
-    if (is.null(outDta$data)) return()
-    
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$EVAC, type="l", xlab="Date", ylab="Canopy Evaporation")
-  })
-  
-  output$plotEVAS <- renderPlot({
-    
-    if (is.null(outDta$data)) return()
-    
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$EVAS, type="l", xlab="Date", ylab="Stem Evaporation")
-  })
   
   output$plotEVBS <- renderPlot({
     
