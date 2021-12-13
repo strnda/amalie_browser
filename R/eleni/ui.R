@@ -96,7 +96,7 @@ ui <- fluidPage(
                                                     plotOutput("plotPET", width = "100%"),
                                                     plotOutput("plotAET", width = "100%"),
                                                     plotOutput("plotEVBS", width = "100%"),
-                                                    plotOutput("plotAnnualMeanEVA", width = "100%"))),
+                                                    dygraphOutput("plotAnnualMeanEVA", width = "100%"))),
                             tableOutput("table"),
                             conditionalPanel(condition = "output.table",
                                              downloadButton("DownloadPlot", label = "Download plot as png",
