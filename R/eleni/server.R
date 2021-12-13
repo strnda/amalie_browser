@@ -45,7 +45,7 @@ server <- function(input, output) {
   df <- reactive ({
     data.frame(
       Period = c("Start Date","End Date"),
-      Dates = c(as.Date(min(input$date_range)), as.Date(max(input$date_range)))
+      Dates = as.character(c(as.Date(min(input$date_range[1L])), as.Date(max(input$date_range[2L]))))
       )
     
   })

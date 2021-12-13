@@ -1,6 +1,7 @@
 library(shiny)
 library(shinythemes)
 library(lubridate)
+library(dygraphs)
 
 ui <- fluidPage(
   titlePanel("Modeling"),
@@ -71,8 +72,12 @@ ui <- fluidPage(
                             column(width = 5, 
                                    sliderInput("date_range", 
                                                "Choose Date Range:", 
-                                               min = as.Date("1960-01-01"), max = as.Date("2016-12-30"), 
-                                               value = c(as.Date("1960-01-01"), as.Date("2016-12-30"))
+                                               min = as.POSIXct("1960-01-01"), 
+                                               max = as.POSIXct("2016-12-30"), 
+                                               value = c(as.POSIXct("1960-01-01"), as.POSIXct("2016-12-30")), 
+                                               step = 1,
+                                               format,
+                                               timeFormat = "%Y-%m-%d"
                                    ),
                                    
                             ),
@@ -106,6 +111,7 @@ ui <- fluidPage(
                                                            dygraphOutput("plotAnnualMeanEVA", width = "100%")))
                                    ),
                             column(width = 3,
+                                   br(),
                                    tableOutput("table"),
                                    conditionalPanel(condition = "output.table",
                                                     downloadButton("DownloadPlot", label = "Download plot as png",
