@@ -1,5 +1,19 @@
 library(hydroGOF)
 
+annual_mean_EVA_KL <- function(outSimulation, mean_KL) {
+  outSimDT <- as.data.table(outSimulation)
+  AnnualmeanEVA <- outSimDT[, ':=' (MONTH = month(DTM),
+                                    YEAR = year(DTM))][, .(
+                                      meanAET = mean(AET),
+                                      meanEVAC = mean(EVAC),
+                                      meanEVAS = mean(EVAS),
+                                      meanEVBS = mean(EVBS)
+                                    ),
+                                    by = .(MONTH, YEAR)][, ':='(YEAR = NULL, MONTH = NULL)]
+  out = AnnualmeanEVA[, DTA := mean_KL$DTA]
+  out
+}
+
 annual_mean_KL <- function(outSimulation) {
   # Annual Total runoff
   outSimDT <- as.data.table(outSimulation)

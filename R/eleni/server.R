@@ -70,6 +70,7 @@ server <- function(input, output) {
       outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
       outDta$statistics <- calculation_BP(outDta$data)
       outDta$annualMean <- annual_mean_BP(outDta$data$dta)
+      outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
       
     }
     
@@ -77,6 +78,7 @@ server <- function(input, output) {
       outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
       outDta$statistics <- calculation_KL(outDta$data)
       outDta$annualMean <- annual_mean_KL(outDta$data$dta)
+      outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
     }
     
     
@@ -119,6 +121,17 @@ server <- function(input, output) {
     
     plot = plot(outDta$annualMean$DTA, outDta$annualMean$meanTOTR, type = "l", xlab="Year", ylab="Annual Mean")
     
+  })
+  
+  output$plotAnnualMeanEVA <- renderPlot({
+    
+    plot(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVBS, type = "l", xlab = "Year", ylab = "Depth [mm/day]", ylim = c(0, 2))
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAC, type = "l",col="red")
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAS, type = "l",col="blue")
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanAET, type = "l",col="green")
+    grid()
+    legend("topright", legend=c("EVBS", "EVAC","EVAS", "AET"),
+           col=c("black","red", "blue", "green"),lty=1:2, cex=0.8)
   })
   
   output$plotTOTR <- renderPlot({
