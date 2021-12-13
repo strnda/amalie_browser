@@ -96,8 +96,11 @@ ui <- fluidPage(
                                                     plotOutput("plotAET", width = "100%"),
                                                     plotOutput("plotEVBS", width = "100%"))),
                             tableOutput("table"),
-                            downloadButton("DownloadPlot", label = "Download plot as png",
-                                           style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
+                            conditionalPanel(condition = "output.table",
+                                             downloadButton("DownloadPlot", label = "Download plot as png",
+                                                            style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")
+                                             )
+                            
                             
                           )
                   
