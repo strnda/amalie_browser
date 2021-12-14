@@ -2,6 +2,9 @@ library(data.table)
 library(RcppDE)
 library(dHRUM)
 library(dygraphs)
+library(dplyr)
+library(ggplot2)
+library(plotly)
 
 source("dHrumBP.R")
 source("dHrumKL.R")
@@ -121,125 +124,140 @@ server <- function(input, output) {
     
   })
   
-  output$plotHydrograph <- renderPlot({
+  output$plotHydrograph <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    # ggplotly(ggplot(data = sliderValues(),
-    #                 mapping = aes_string(x = outDta$data$dta$DTM, y = outDta$data$dta$TOTR)) +
-    #            geom_line()) %>% layout(xaxis = list(rangeslider = list(type = "date")))
-    # 
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$TOTR,
-                type = "l", xlab = "Date",
-                ylab="Q [mm/day]")
-    plot = plot + lines(outDta$data$dta$DTM,
-                        outDta$data$dta$BASF,
-                        col='red')
+    plot <- ggplot(outDta$data$dta, aes(x=DTM)) + 
+      geom_line(aes(y = TOTR), color = "black") + 
+      geom_line(aes(y = BASF), color = "red") +
+      labs(y="Q [mm/day]", x = "Date")
+    ggplotly(plot)
+    
   })
   
-  output$plotAnnualMean <- renderPlot({
+  output$plotAnnualMean <- renderPlotly({
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$annualMean$DTA, outDta$annualMean$meanTOTR, type = "l", xlab="Year", ylab="Annual Mean")
+    plot <- ggplot(outDta$annualMean, aes(x = DTA)) +
+      geom_line(aes(y = meanTOTR), color = "black") +
+      labs(y="Annual Mean", x = "Date")
+    ggplotly(plot)
     
   })
   
-  output$plotAnnualMeanEVA <- renderPlot({
+  output$plotAnnualMeanEVA <- renderPlotly({
+    if (is.null(outDta$annualMeanEVA)) return()
     
-    plot(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVBS, type = "l", xlab = "Year", ylab = "Depth [mm/day]", ylim = c(0, 2))
-    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAC, type = "l",col="red")
-    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAS, type = "l",col="blue")
-    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanAET, type = "l",col="green")
-    grid()
-    legend("topright", legend=c("EVBS", "EVAC","EVAS", "AET"),
-           col=c("black","red", "blue", "green"),lty=1:2, cex=0.8)
+    plot <- ggplot(outDta$annualMeanEVA, aes(x = DTA)) +
+      geom_line(aes(y = meanEVBS), color = "black") +
+      geom_line(aes(y = meanEVAC), color = "red") +
+      geom_line(aes(y = meanEVAS), color = "blue") +
+      geom_line(aes(y = meanAET), color = "green") +
+      labs(y="Depth [mm/day]", x = "Date")
+    ggplotly(plot)
     
-    # AET <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanAET)
-    # EVAC <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAC)
-    # EVAS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAS)
-    # EVBS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVBS)
-    # 
-    # EVAP <- cbind(AET, EVAS, EVAC, EVBS)
-    # dygraph(EVAP)%>% dyAxis("y", label = "Depth [mm/dat]")  %>% 
-    #   dyOptions(colors =c("black","blue", "green", "red"))%>%
-    #   dyRangeSelector()
     
   })
   
-  output$plotTOTR <- renderPlot({
+  output$plotTOTR <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$TOTR, type="l", xlab="Date", ylab="Total Runoff [mm/day]")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = TOTR), color = "black") +
+      labs(y="Total Runoff [mm/day]", x = "Date")
+    ggplotly(plot)
     
   })
   
-  output$plotBASF <- renderPlot({
+  output$plotBASF <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$BASF, type="l", xlab="Date", ylab="Baseflow [mm/day]")
-  })
-  
-  output$plotDIRR <- renderPlot({
-    
-    if (is.null(outDta$data)) return()
-    
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$DIRR, type="l", xlab="Date", ylab="Direct Runoff [mm/day]")
-  })
-  
-  output$plotSOIS <- renderPlot({
-    
-    if (is.null(outDta$data)) return()
-    
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$SOIS, type="l", xlab="Date", ylab="Soil storage")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = BASF), color = "black") +
+      labs(y="Baseflow [mm/day]", x = "Date")
+    ggplotly(plot)
     
   })
   
-  output$plotGROS <- renderPlot({
+  output$plotDIRR <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$GROS, type="l", xlab="Date", ylab="Groundwater storage")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = DIRR), color = "black") +
+      labs(y="Direct Runoff [mm/day]", x = "Date")
+    ggplotly(plot)
+    
   })
   
-  output$plotSURS <- renderPlot({
+  output$plotSOIS <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$SURS, type="l", xlab="Date", ylab="Surface retention")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = SOIS), color = "black") +
+      labs(y="Soil storage", x = "Date")
+    ggplotly(plot)
+    
+    
   })
   
-  output$plotPET <- renderPlot({
+  output$plotGROS <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$PET, type="l", xlab="Date", ylab="Potential Evapotranspiration")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = GROS), color = "black") +
+      labs(y="Groundwater storage", x = "Date")
+    ggplotly(plot)
   })
   
-  output$plotAET <- renderPlot({
+  output$plotSURS <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$AET, type="l", xlab="Date", ylab="Actual Evapotranspiration")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = SURS), color = "black") +
+      labs(y="Surface retention", x = "Date")
+    ggplotly(plot)
+    
+  })
+  
+  output$plotPET <- renderPlotly({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = PET), color = "black") +
+      labs(y="Potential Evapotranspiration", x = "Date")
+    ggplotly(plot)
+    
+  })
+  
+  output$plotAET <- renderPlotly({
+    
+    if (is.null(outDta$data)) return()
+    
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = AET), color = "black") +
+      labs(y="Actual Evapotranspiration", x = "Date")
+    ggplotly(plot)
+    
   })
   
   
-  output$plotEVBS <- renderPlot({
+  output$plotEVBS <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    plot = plot(outDta$data$dta$DTM,
-                outDta$data$dta$EVBS, type="l", xlab="Date", ylab="Bare soil Evapotranspiration")
+    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = EVBS), color = "black") +
+      labs(y="Bare soil Evapotranspiration", x = "Date")
+    ggplotly(plot)
+    
   })
   
   output$table <- renderTable(outDta$statistics)
