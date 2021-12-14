@@ -42,9 +42,9 @@ server <- function(input, output) {
   })
   
   # Show the values in an HTML table ----
-  # output$values <- renderTable({
-  #   sliderValues()
-  # })
+  output$values <- renderTable({
+    sliderValues()
+  })
   df <- reactive ({
     data.frame(
       Period = c("Start Date","End Date"),
@@ -119,7 +119,7 @@ server <- function(input, output) {
                 xlab="Day")
     plot = plot + points(days, 
                          outDta$data$FDC, 
-                         col="red", 
+                         col="#8f99fb", 
                          pch=19)
     
   })
@@ -129,20 +129,19 @@ server <- function(input, output) {
     if (is.null(outDta$data)) return()
     
     plot <- ggplot(outDta$data$dta, aes(x=DTM)) + 
-      geom_line(aes(y = TOTR), color = "black") + 
-      geom_line(aes(y = BASF), color = "red") +
+      geom_line(aes(y = TOTR), color = "#FA9335") + 
+      geom_line(aes(y = BASF), color = "#0088D2") +
       labs(y="Q [mm/day]", x = "Date")
     ggplotly(plot)
     
   })
   
-  output$plotAnnualMean <- renderPlotly({
+  output$plotAnnualMean <- renderPlot({
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$annualMean, aes(x = DTA)) +
+    ggplot(outDta$annualMean, aes(x = DTA)) +
       geom_line(aes(y = meanTOTR), color = "black") +
       labs(y="Annual Mean", x = "Date")
-    ggplotly(plot)
     
   })
   
@@ -150,116 +149,119 @@ server <- function(input, output) {
     if (is.null(outDta$annualMeanEVA)) return()
     
     plot <- ggplot(outDta$annualMeanEVA, aes(x = DTA)) +
-      geom_line(aes(y = meanEVBS), color = "black") +
-      geom_line(aes(y = meanEVAC), color = "red") +
-      geom_line(aes(y = meanEVAS), color = "blue") +
-      geom_line(aes(y = meanAET), color = "green") +
+      geom_line(aes(y = meanEVBS), color = "#B77252") +
+      geom_line(aes(y = meanEVAC), color = "#939B66") +
+      geom_line(aes(y = meanEVAS), color = "#838BC2") +
+      geom_line(aes(y = meanAET), color = "#F8CF2C") +
       labs(y="Depth [mm/day]", x = "Date")
     ggplotly(plot)
     
     
   })
   
-  output$plotTOTR <- renderPlotly({
+  output$plotTOTR <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = TOTR), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = TOTR), color = "#FA9335") +
       labs(y="Total Runoff [mm/day]", x = "Date")
-    ggplotly(plot)
     
   })
   
-  output$plotBASF <- renderPlotly({
+  output$plotBASF <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = BASF), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = BASF), color = "#0088D2") +
       labs(y="Baseflow [mm/day]", x = "Date")
-    ggplotly(plot)
+    
     
   })
   
-  output$plotDIRR <- renderPlotly({
+  output$plotDIRR <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
       geom_line(aes(y = DIRR), color = "black") +
       labs(y="Direct Runoff [mm/day]", x = "Date")
-    ggplotly(plot)
     
   })
   
-  output$plotSOIS <- renderPlotly({
+  output$plotSOIS <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = SOIS), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = SOIS), color = "#6868ac") +
       labs(y="Soil storage", x = "Date")
-    ggplotly(plot)
     
     
   })
   
-  output$plotGROS <- renderPlotly({
+  output$plotGROS <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
       geom_line(aes(y = GROS), color = "black") +
       labs(y="Groundwater storage", x = "Date")
-    ggplotly(plot)
   })
   
-  output$plotSURS <- renderPlotly({
+  output$plotSURS <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = SURS), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = SURS), color = "#BB907F") +
       labs(y="Surface retention", x = "Date")
-    ggplotly(plot)
+   
     
   })
   
-  output$plotPET <- renderPlotly({
+  output$plotPET <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = PET), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = PET), color = "#6868ac") +
       labs(y="Potential Evapotranspiration", x = "Date")
-    ggplotly(plot)
     
   })
   
-  output$plotAET <- renderPlotly({
+  output$plotAET <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = AET), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = AET), color = "#F8CF2C") +
       labs(y="Actual Evapotranspiration", x = "Date")
-    ggplotly(plot)
     
   })
   
   
-  output$plotEVBS <- renderPlotly({
+  output$plotEVBS <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
-    plot <- ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = EVBS), color = "black") +
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = EVBS), color = "#B77252") +
       labs(y="Bare soil Evapotranspiration", x = "Date")
-    ggplotly(plot)
     
   })
   
   output$table <- renderTable(outDta$statistics)
+  
+  output$DownloadData <- downloadHandler(
+    
+    filename = function() {
+      paste("example.csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(sliderValues(), file, row.names = FALSE)
+    }
+  )
   
 }
