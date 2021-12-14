@@ -108,7 +108,7 @@ ui <- fluidPage(
                                                            plotOutput("plotPET", width = "100%"),
                                                            plotOutput("plotAET", width = "100%"),
                                                            plotOutput("plotEVBS", width = "100%"),
-                                                           dygraphOutput("plotAnnualMeanEVA", width = "100%")))
+                                                           plotOutput("plotAnnualMeanEVA", width = "100%")))
                                    ),
                             column(width = 3,
                                    br(),

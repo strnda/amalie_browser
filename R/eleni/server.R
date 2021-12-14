@@ -145,17 +145,25 @@ server <- function(input, output) {
     
   })
   
-  output$plotAnnualMeanEVA <- renderDygraph({
+  output$plotAnnualMeanEVA <- renderPlot({
     
-    AET <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanAET)
-    EVAC <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAC)
-    EVAS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAS)
-    EVBS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVBS)
+    plot(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVBS, type = "l", xlab = "Year", ylab = "Depth [mm/day]", ylim = c(0, 2))
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAC, type = "l",col="red")
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanEVAS, type = "l",col="blue")
+    lines(outDta$annualMeanEVA$DTA, outDta$annualMeanEVA$meanAET, type = "l",col="green")
+    grid()
+    legend("topright", legend=c("EVBS", "EVAC","EVAS", "AET"),
+           col=c("black","red", "blue", "green"),lty=1:2, cex=0.8)
     
-    EVAP <- cbind(AET, EVAS, EVAC, EVBS)
-    dygraph(EVAP)%>% dyAxis("y", label = "Depth [mm/dat]")  %>% 
-      dyOptions(colors =c("black","blue", "green", "red"))%>%
-      dyRangeSelector()
+    # AET <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanAET)
+    # EVAC <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAC)
+    # EVAS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVAS)
+    # EVBS <- ts(frequency = 12, start = c(1960, 1),outDta$annualMeanEVA$meanEVBS)
+    # 
+    # EVAP <- cbind(AET, EVAS, EVAC, EVBS)
+    # dygraph(EVAP)%>% dyAxis("y", label = "Depth [mm/dat]")  %>% 
+    #   dyOptions(colors =c("black","blue", "green", "red"))%>%
+    #   dyRangeSelector()
     
   })
   
