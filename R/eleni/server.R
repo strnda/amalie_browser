@@ -81,16 +81,24 @@ server <- function(input, output) {
                          CMIN = input$c_min
                          )
     if(input$basin == "BP basin") {
-      outDta$data <- BP_runDHRUM(parsDF, "LIN_RES", "PDM")
-      outDta$statistics <- calculation_BP(outDta$data)
+      outDta$data <- BP_runDHRUM(parsDF, 
+                                 "LIN_RES", 
+                                 "PDM",
+                                 as.character(as.Date(min(input$date_range[1L]))), 
+                                 as.character(as.Date(max(input$date_range[2L]))))
+      outDta$statistics <- calculation_BP(outDta$data, outDta$data$outObs)
       outDta$annualMean <- annual_mean_BP(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
       
     }
     
     if(input$basin == "KL basin") {
-      outDta$data <- KL_runDHRUM(parsDF, "LIN_RES", "PDM")
-      outDta$statistics <- calculation_KL(outDta$data)
+      outDta$data <- KL_runDHRUM(parsDF, 
+                                 "LIN_RES", 
+                                 "PDM",
+                                 as.character(as.Date(min(input$date_range[1L]))), 
+                                 as.character(as.Date(max(input$date_range[2L]))))
+      outDta$statistics <- calculation_KL(outDta$data, outDta$data$outObs)
       outDta$annualMean <- annual_mean_KL(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
     }

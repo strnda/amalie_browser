@@ -25,21 +25,21 @@ annual_mean_KL <- function(outSimulation) {
   out
 }
 
-calculation_KL <- function(out) {
-  Input <- readRDS("./data/KL_benchmark_LUMPED.rds")
-  outBenchMark <- Input$dta
+calculation_KL <- function(out, obs) {
+  #Input <- readRDS("./data/KL_benchmark_LUMPED.rds")
+  #outBenchMark <- Input$dta
   outSimulation <- out$dta
   
   # Kling-Gupta Efficiency
-  KGEout <- KGE(outSimulation$TOTR, outBenchMark$TOTR)
-  KGEoutSQRT <- KGE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  KGEout <- KGE(outSimulation$TOTR, obs)
+  KGEoutSQRT <- KGE(sqrt(outSimulation$TOTR), sqrt(obs))
   
   # Nash-Sutcliffe Efficiency
-  NSEout <- NSE(outSimulation$TOTR, outBenchMark$TOTR)
-  NSEoutSQRT <- NSE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  NSEout <- NSE(outSimulation$TOTR, obs)
+  NSEoutSQRT <- NSE(sqrt(outSimulation$TOTR), sqrt(obs))
   # Mean Absolute Error
-  MAEout <- mae(outSimulation$TOTR, outBenchMark$TOTR)
-  MAEoutSQRT <- mae(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  MAEout <- mae(outSimulation$TOTR, obs)
+  MAEoutSQRT <- mae(sqrt(outSimulation$TOTR), sqrt(obs))
   
   # Table
   nm <- c("NSE(Q)", "NSE(sqrt(Q))", "KGE(Q)", "KGE(sqrt(Q))", "MAE(Q)", "MAE(sqrt(Q))")
@@ -55,7 +55,7 @@ calculation_KL <- function(out) {
   Stat
 }
 
-KL_runDHRUM = function(params, gwStor, swStor) {
+KL_runDHRUM = function(params, gwStor, swStor, start_date, end_date) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
   p_OBS=days/365.25
@@ -74,11 +74,21 @@ KL_runDHRUM = function(params, gwStor, swStor) {
   AreasKL <- 3.28*1000*1000
   IdsHrus <- paste0("KL",seq(1:length(AreasKL)))
   # end global variables
+  rds = readRDS("./data/KL_benchmark_LUMPED.rds")
+  new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
+  
+  filtered <- new %>%
+    select(Prec, Temp, DTM, obsTOTR) %>%
+    filter(between(DTM, as.Date(start_date), as.Date(end_date)))
+  
+  prec = filtered$Prec
+  temp = filtered$Temp
+  obsTOTR = filtered$obsTOTR
   
   
   KL_run = function(pars = parsDF){
     KLdhrus <- initdHruModel(nHrusKL,AreasKL,IdsHrus)
-    setPTInputsToAlldHrus(KLdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
+    setPTInputsToAlldHrus(KLdhrus, Prec = prec, Temp = temp, inDate = as.Date(start_date))
     calcPetToAllHrus(dHRUM_ptr = KLdhrus,50.1,"HAMON")
     setGWtypeToAlldHrus(dHRUM_ptr = KLdhrus ,gwTypes=rep(gwStor, times=1),hruIds=IdsHrus)
     setSoilStorTypeToAlldHrus(dHRUM_ptr = KLdhrus,soilTypes=rep(swStor,times= 1),hruIds=IdsHrus)
@@ -98,10 +108,9 @@ KL_runDHRUM = function(params, gwStor, swStor) {
     
     simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
     
-    return (list(FDC = simBest, dta = copy(dtaDF)))
+    return (list(FDC = simBest, dta = copy(dtaDF), outObs = obsTOTR))
   }
-  
-  calculation_KL(KL_run(pars = parsDF))
+
   
   KL_run(pars = parsDF)
   

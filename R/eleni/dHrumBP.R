@@ -1,4 +1,6 @@
 library(hydroGOF)
+library(data.table)
+library(dplyr)
 
 annual_mean_EVA_BP <- function(outSimulation, mean_BP) {
   outSimDT <- as.data.table(outSimulation)
@@ -25,21 +27,21 @@ annual_mean_BP <- function(outSimulation) {
   out
 }
 
-calculation_BP <- function(out) {
-  Input <- readRDS("./data/BP_benchmark_LUMPED.rds")
-  outBenchMark <- Input$dta
+calculation_BP <- function(out, obs) {
+  #Input <- readRDS("./data/BP_benchmark_LUMPED.rds")
+  #outBenchMark <- Input$dta
   outSimulation <- out$dta
   
   # Kling-Gupta Efficiency
-  KGEout <- KGE(outSimulation$TOTR, outBenchMark$TOTR)
-  KGEoutSQRT <- KGE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  KGEout <- KGE(outSimulation$TOTR, obs)
+  KGEoutSQRT <- KGE(sqrt(outSimulation$TOTR), sqrt(obs))
   
   # Nash-Sutcliffe Efficiency
-  NSEout <- NSE(outSimulation$TOTR, outBenchMark$TOTR)
-  NSEoutSQRT <- NSE(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  NSEout <- NSE(outSimulation$TOTR, obs)
+  NSEoutSQRT <- NSE(sqrt(outSimulation$TOTR), sqrt(obs))
   # Mean Absolute Error
-  MAEout <- mae(outSimulation$TOTR, outBenchMark$TOTR)
-  MAEoutSQRT <- mae(sqrt(outSimulation$TOTR), sqrt(outBenchMark$TOTR))
+  MAEout <- mae(outSimulation$TOTR, obs)
+  MAEoutSQRT <- mae(sqrt(outSimulation$TOTR), sqrt(obs))
   
   # Table
   nm <- c("NSE(Q)", "NSE(sqrt(Q))", "KGE(Q)", "KGE(sqrt(Q))", "MAE(Q)", "MAE(sqrt(Q))")
@@ -50,7 +52,7 @@ calculation_BP <- function(out) {
   Stat
 }
 
-BP_runDHRUM <- function(params, gwStor, swStor) {
+BP_runDHRUM <- function(params, gwStor, swStor, start_date, end_date) {
   # START put this to the environment global variables
   days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
   p_OBS=days/365.25
@@ -59,19 +61,37 @@ BP_runDHRUM <- function(params, gwStor, swStor) {
   A=4.7*1000*1000# plocha BP
   RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
   parsDF = params
-  filname2 = "./data/BP_1960_01_01.txt"
-  TPdta = read.table(filname2)
-  prec=TPdta$V2
-  temp=TPdta$V1
+  # setwd("/home/eleni/CULS_FES/semester_3/Presentation of Environmental Data/project/dHRUM_shiny/R/eleni/data/")
+  # filname2 = "BP_1960_01_01.txt"
+  # TPdta = read.table(filname2)
+  # prec=TPdta$V2
+  # temp=TPdta$V1
+  # dtaPT <- data.table(Prec = prec, Temp = temp)
+  #sequence of dates
   nHrusBP <- 1
   AreasBP <- 4.7*1000*1000
   IdsHrus <- paste0("BP",seq(1:length(AreasBP)))
   # end global variables
+  #DTM = seq(from = as.Date("1960-01-01"), to = as.Date("2020-12-31"), by = 'day')
+  
+  #new <- data.table(Prec = prec, Temp = temp, DTM = DTM)
+  #setwd("/home/eleni/CULS_FES/semester_3/Presentation of Environmental Data/project/dHRUM_shiny/R/eleni/data/")
+  rds = readRDS("./data/BP_benchmark_LUMPED.rds")
+  
+  new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
+  
+  filtered <- new %>%
+    select(Prec, Temp, DTM, obsTOTR) %>%
+    filter(between(DTM, as.Date(start_date), as.Date(end_date)))
+  
+  prec = filtered$Prec
+  temp = filtered$Temp
+  obsTOTR = filtered$obsTOTR
   
   
   BP_run = function(pars = parsDF){
     BPdhrus <- initdHruModel(nHrusBP,AreasBP,IdsHrus)
-    setPTInputsToAlldHrus(BPdhrus, Prec = prec, Temp = temp, inDate = as.Date("1960/01/01"))
+    setPTInputsToAlldHrus(BPdhrus, Prec = prec, Temp = temp, inDate = as.Date(start_date))
     calcPetToAllHrus(dHRUM_ptr = BPdhrus,50.1,"HAMON")
     setGWtypeToAlldHrus(dHRUM_ptr = BPdhrus ,gwTypes=rep(gwStor, times=1),hruIds=IdsHrus)
     setSoilStorTypeToAlldHrus(dHRUM_ptr = BPdhrus,soilTypes=rep(swStor,times= 1),hruIds=IdsHrus)
@@ -91,7 +111,7 @@ BP_runDHRUM <- function(params, gwStor, swStor) {
     
     simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
     
-    return (list(FDC = simBest, dta = copy(dtaDF)))
+    return (list(FDC = simBest, dta = copy(dtaDF), outObs = obsTOTR))
   }
   
   BP_run(pars = parsDF)
