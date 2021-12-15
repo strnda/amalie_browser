@@ -127,7 +127,7 @@ server <- function(input, output) {
   })
   
   output$plotFDC <- renderPlotly({
-    # if (is.null(outDta$data)) return()
+    if (is.null(outDta$data)) return()
 
     if(input$basin == "KL basin") {
       days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
@@ -217,13 +217,17 @@ server <- function(input, output) {
     
   })
   
-  output$plotTOTR <- renderPlot({
+  output$plotTOTR <- renderPlotly({
     
     if (is.null(outDta$data)) return()
     
-    ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = TOTR), color = "#FA9335") +
-      labs(y="Total Runoff [mm/day]", x = "Date")
+    # outDta$data$
+    
+    fig <- plot_ly(data =outDta$data$dta, x=~DTM, y=~TOTR, type = 'scatter', mode = 'lines') 
+    
+    # ggplot(outDta$data$dta, aes(x = DTM)) +
+    #   geom_line(aes(y = TOTR), color = "#FA9335") +
+    #   labs(y="Total Runoff [mm/day]", x = "Date")
     
   })
   

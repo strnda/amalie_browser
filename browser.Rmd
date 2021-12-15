@@ -9,8 +9,8 @@ runtime: shiny
 # {.tabset}
 ## dHRUM - HRU jednotka
 
-```{r eleni, echo = FALSE, message = FALSE, warning = FALSE}
-shinyAppFile(appFile = "./R/eleni/app.R",
+```{r petr, echo = FALSE, message = FALSE, warning = FALSE}
+shinyAppFile(appFile = "./R/petr/app.R",
              options = list(width = "100%",
                             height = 1000))
 ```
@@ -92,5 +92,13 @@ leaflet() %>%
 ```
 
 
+
+<!-- ## dHRUM - HRU jednotka -->
+
+<!-- ```{r eleni, echo = FALSE, message = FALSE, warning = FALSE} -->
+<!-- shinyAppFile(appFile = "./R/eleni/app.R", -->
+<!--              options = list(width = "100%", -->
+<!--                             height = 1000)) -->
+<!-- ``` -->
 
 
