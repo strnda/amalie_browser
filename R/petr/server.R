@@ -136,18 +136,19 @@ server <- function(input, output) {
       QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
       A=3.28*1000*1000# plocha KL
       RmKL = QmKL * (3600*24) / A
-      # dtaFDC <- data.frame(Days =days, ObsFDC =RmKL)
+      dtaFDC <- data.frame(Days =days, ObsFDC =RmKL)
       # KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
       # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
       
       
       # 
-      # qp <- ggplot(data = outDta$FDC, aes(x = Days)) +
-      #   geom_point(aes(y=FDCobs), color = "black") 
-      # qp
+      qp <- ggplot(data = dtaFDC, aes(x = Days)) +
+        geom_point(aes(y=ObsFDC), color = "black")
+      qp
       
       
-      plot(FDCobs,FDCsim, data = outDta$FDC)
+      # plot = plot(Days~ObsFDC, data = dtaFDC)
+      # plot
       
       # plot1 = plot(outDta$data$FDC$FDCobs,outDta$data$FDC$FDCsim,
       #           pch = 19,
@@ -192,7 +193,7 @@ server <- function(input, output) {
       #                    col="#8f99fb",
       #                    pch=19)
       
-      ggplot(outDta$annualMean, aes(x = DTA)) +
+      qp <- ggplot(outDta$annualMean, aes(x = DTA)) +
         geom_line(aes(y = meanTOTR), color = "black") +
         labs(y="Annual Mean", x = "Date")
       # 
@@ -206,7 +207,9 @@ server <- function(input, output) {
       # plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
       #   add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
        
-      }
+    }
+    
+    return(qp)
       })
   
   output$plotHydrograph <- renderPlotly({
