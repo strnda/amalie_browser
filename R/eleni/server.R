@@ -6,8 +6,8 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 
-source("dHrumBP.R")
-source("dHrumKL.R")
+source("./dHrumBP.R")
+source("./dHrumKL.R")
 
 server <- function(input, output) {
   # Reactive expression to create data frame of all input values ----

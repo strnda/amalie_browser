@@ -1,6 +1,6 @@
 library(shiny)
-source("./R/eleni/ui.R")
-source("./R/eleni/server.R")
+source("./ui.R")
+source("./server.R")
 
 shinyApp(ui = ui, server = server)
 

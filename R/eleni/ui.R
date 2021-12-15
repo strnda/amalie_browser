@@ -4,12 +4,12 @@ library(lubridate)
 library(dygraphs)
 library(plotly)
 
-ui <- navbarPage(div(a(img(src = "fzp_en.png", height = 350 / 9))), 
+ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))), 
                  windowTitle = "dHrum",
                  tabPanel("",
                   fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
                           tags$head(
-                            tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+                            tags$link(rel = "stylesheet", type = "text/css", href = "./www/custom.css")
                           ),
                           sidebarLayout(position = "left",
                                         sidebarPanel(width = 3,
