@@ -4,10 +4,10 @@ library(lubridate)
 library(dygraphs)
 library(plotly)
 
-ui <- navbarPage(div(
-                     a(img(src = "fzp_en.png", height = 350 / 9))), 
+ui <- navbarPage(div(a(img(src = "fzp_en.png", height = 350 / 9))), 
+                 windowTitle = "dHrum",
                  tabPanel("",
-                fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
+                  fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
                           tags$head(
                             tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
                           ),
@@ -50,6 +50,7 @@ ui <- navbarPage(div(
                                                            sliderInput("b_evap", "B_EVAP:", min = 0.5, max = 2.5, value = 1, step = 0.01),
                                                            sliderInput("c_min", "C_MIN:", min = 0, max = 20, value = 10, step = 0.1),
                                                            sliderInput("retcap", "RETCAP:", min = 0, max = 20, value = 2, step = 0.1),
+                                                           textOutput("smax"),
                                                            style = "height: 550px;"
                                                          ),
                                                          tabPanel(
@@ -70,11 +71,11 @@ ui <- navbarPage(div(
                                         ),
                                         mainPanel(width = 9,
                                                   fluidRow(
-                                                    column(width = 4,
+                                                    column(width = 4, offset = 1,
                                                            selectInput("PlotType", label = "Choose a plot:",
                                                                        choices = c("Time series", "Model performance", "State variables", "Evapotranspiration"))
                                                     ),
-                                                    column(width = 5, 
+                                                    column(width = 4, 
                                                            sliderInput("date_range", 
                                                                        "Choose a time window:", 
                                                                        min = as.POSIXct("1960-01-01"), 
@@ -86,10 +87,9 @@ ui <- navbarPage(div(
                                                            ),
                                                            
                                                     ),
-                                                    column(width = 3,
-                                                           tableOutput("date_ranges")
-                                                           
-                                                    )
+                                                    # column(width = 2,
+                                                    #        tableOutput("date_ranges")
+                                                    # )
                                                   ),
                                                   fluidRow(
                                                     column(width = 9,
@@ -116,8 +116,9 @@ ui <- navbarPage(div(
                                                                                    plotlyOutput("plotAnnualMeanEVA", width = "100%")))
                                                     ),
                                                     column(width = 3,
-                                                           br(),
                                                            tableOutput("table"),
+                                                           br(),
+                                                           tableOutput("values"),
                                                            conditionalPanel(condition = "output.table",
                                                                             downloadButton("DownloadData", label = "Download data",
                                                                                            style = "color:#565656; background-color:#ECF0F1; border-color:#DCDCDC; width:170px; height:25px; font-size:95%; padding-top:2px; margin-top:10px;")

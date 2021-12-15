@@ -13,28 +13,41 @@ server <- function(input, output) {
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
     data.frame(
-      Parameter = c("C_MAX",
-                    "DDFA",
-                    "RETCAP",
-                    "CANS_ST",
-                    "STEM_ST",
-                    "CDIV",
-                    "SDIV",
-                    "CSDIV",
+      Parameter = c("B_SOIL",
+                    "C_MAX",
+                    "B_EVAP",
                     "KS",
                     "KF",
-                    "ADIV"),
-      Value = as.character(c(input$c_max,
-                             input$ddfa,
-                             input$retcap,
-                             input$cans_st,
-                             input$stem_st,
-                             input$cdiv,
-                             input$sdiv,
-                             input$csdiv,
+                    "ADIV",
+                    "CDIV",
+                    "SDIV",
+                    "CAN_ST",
+                    "STEM_ST",
+                    "CSDIV",
+                    "TETR",
+                    "DDFA",
+                    "TMEL",
+                    "RETCAP",
+                    "CMIN",
+                    "SMAX"),
+      Value = as.character(c(input$b_soil,
+                             input$c_max,
+                             input$b_evap,
                              input$ks,
                              input$kf,
-                             input$adiv)),
+                             input$adiv,
+                             input$cdiv,
+                             input$sdiv,
+                             input$cans_st,
+                             input$stem_st,
+                             input$csdiv,
+                             input$tetr,
+                             input$ddfa,
+                             input$tmel,
+                             input$retcap,
+                             input$c_min,
+                             round((input$b_soil * input$c_min + input$c_max) / (input$b_soil + 1),2)
+                             )),
       stringsAsFactors = FALSE)
     
    
@@ -45,17 +58,20 @@ server <- function(input, output) {
   output$values <- renderTable({
     sliderValues()
   })
-  df <- reactive ({
-    data.frame(
-      Period = c("Start Date","End Date"),
-      Dates = as.character(c(as.Date(min(input$date_range[1L])), as.Date(max(input$date_range[2L]))))
-      )
-    
-  })
   
-  output$date_ranges <- renderTable({
-    df()
-  })
+  
+  
+  # df <- reactive ({
+  #   data.frame(
+  #     Period = c("Start Date","End Date"),
+  #     Dates = as.character(c(as.Date(min(input$date_range[1L])), as.Date(max(input$date_range[2L]))))
+  #     )
+  #   
+  # })
+  # 
+  # output$date_ranges <- renderTable({
+  #   df()
+  # })
   
   outDta <- reactiveValues(data = NULL)
   
@@ -94,6 +110,7 @@ server <- function(input, output) {
       outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
       
     }
+    
     
     if(input$basin == "KL basin") {
       outDta$data <- KL_runDHRUM(parsDF, 
@@ -263,5 +280,6 @@ server <- function(input, output) {
       write.csv(sliderValues(), file, row.names = FALSE)
     }
   )
+
   
 }

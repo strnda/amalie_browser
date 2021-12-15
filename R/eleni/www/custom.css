@@ -51,3 +51,7 @@ navbar-nav li a {
 .tab-content {
   padding-top: 20px;
 }
+
+#table table {
+  color: #6868ac !important;
+}
