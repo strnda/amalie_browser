@@ -136,14 +136,16 @@ server <- function(input, output) {
       QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
       A=3.28*1000*1000# plocha KL
       RmKL = QmKL * (3600*24) / A
-      dtaFDC <- data.frame(Days =days, ObsFDC =RmKL)
-      # KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
+      KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
+      dtaFDC <- data.frame(Days =days, ObsFDC =RmKL, SimFDC =KLsim)
+      
       # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
       
       
       # 
       qp <- ggplot(data = dtaFDC, aes(x = Days)) +
-        geom_point(aes(y=ObsFDC), color = "black")
+        geom_point(aes(y=ObsFDC), color = "black")+
+        geom_point(aes(y=SimFDC), color = "#8f99fb")
       qp
       
       
@@ -180,6 +182,17 @@ server <- function(input, output) {
       QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
       A=4.7*1000*1000# plocha BP
       RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
+      BPsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
+      dtaFDC <- data.frame(Days =days, ObsFDC =RmBP, SimFDC =BPsim)
+      
+      # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
+      
+      
+      # 
+      qp <- ggplot(data = dtaFDC, aes(x = Days)) +
+        geom_point(aes(y=ObsFDC), color = "black")+
+        geom_point(aes(y=SimFDC), color = "#8f99fb")
+      qp
       # 
       # plot1 = plot(days,RmBP,
       #             pch = 19,
@@ -192,11 +205,6 @@ server <- function(input, output) {
       #                    outDta$data$FDC,
       #                    col="#8f99fb",
       #                    pch=19)
-      
-      qp <- ggplot(outDta$annualMean, aes(x = DTA)) +
-        geom_line(aes(y = meanTOTR), color = "black") +
-        labs(y="Annual Mean", x = "Date")
-      # 
       # par(mfrow=c(1,2))    # set the plotting area into a 1*2 array
       # plot1
       # plot1
