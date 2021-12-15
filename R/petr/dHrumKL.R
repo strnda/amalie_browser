@@ -66,7 +66,7 @@ KL_runDHRUM = function(params, gwStor, swStor, start_date, end_date) {
   RmKL = QmKL * (3600*24) / A
   
   parsDF = params
-  filname2 = "./R/eleni/data/KL_1960_01_01_noDate.txt"
+  filname2 = "./R/petr/data/KL_1960_01_01_noDate.txt"
   TPdta = read.table(filname2)
   prec=TPdta$V1
   temp=TPdta$V2
@@ -74,7 +74,7 @@ KL_runDHRUM = function(params, gwStor, swStor, start_date, end_date) {
   AreasKL <- 3.28*1000*1000
   IdsHrus <- paste0("KL",seq(1:length(AreasKL)))
   # end global variables
-  rds = readRDS("./R/eleni/data/KL_benchmark_LUMPED.rds")
+  rds = readRDS("./R/petr/data/KL_benchmark_LUMPED.rds")
   new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
   
   filtered <- new %>%
