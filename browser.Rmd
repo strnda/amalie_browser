@@ -7,7 +7,7 @@ runtime: shiny
 ---
 
 # {.tabset}
-## dHRUM - HRU jednotka
+## dHRUM - The parametrisation of single HRU unit 
 
 ```{r petr, echo = FALSE, message = FALSE, warning = FALSE}
 shinyAppFile(appFile = "./R/petr/app.R",

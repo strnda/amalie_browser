@@ -4,10 +4,14 @@ library(lubridate)
 library(dygraphs)
 library(plotly)
 
-ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))), 
-                 windowTitle = "dHrum",
-                 tabPanel("",
-                  fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
+# ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))), 
+#                  windowTitle = "dHrum",
+#                  tabPanel("",
+# ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))),
+#                  windowTitle = "dHrum",
+#                  tabPanel("",
+
+ ui<-                 fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
                           tags$head(
                             tags$link(rel = "stylesheet", type = "text/css", href = "./www/custom.css")
                           ),
@@ -130,5 +134,5 @@ ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))),
                                         )
                  ),
 )
-  )
-)
+  # )
+# )
