@@ -128,16 +128,43 @@ server <- function(input, output) {
   
   output$plotFDC <- renderPlot({
     if (is.null(outDta$data)) return()
-    
-    plot = plot(days,RmBP, 
+    if(input$basin == "KL basin") {
+      days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
+      p_OBS=days/365.25
+      QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
+      A=3.28*1000*1000# plocha KL
+      RmKL = QmKL * (3600*24) / A
+      
+      plot = plot(days,RmKL, 
                 pch = 19, 
-                ylim = range(c(outDta$data$FDC,RmBP)), 
+                ylim = range(c(outDta$data$FDC,RmKL)), 
                 ylab ="Qm [mm/day]", 
                 xlab="Day")
-    plot = plot + points(days, 
+      plot = plot + points(days, 
                          outDta$data$FDC, 
                          col="#8f99fb", 
                          pch=19)
+    }
+    
+    if(input$basin == "BP basin") {
+      days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
+      p_OBS=days/365.25
+      # RaBP = 96# odhad Martin Hanel
+      QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
+      A=4.7*1000*1000# plocha BP
+      RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
+      
+      plot = plot(days,RmBP, 
+                  pch = 19, 
+                  ylim = range(c(outDta$data$FDC,RmBP)), 
+                  ylab ="Qm [mm/day]", 
+                  xlab="Day")
+      plot = plot + points(days, 
+                           outDta$data$FDC, 
+                           col="#8f99fb", 
+                           pch=19)
+    
+      }
     
   })
   
