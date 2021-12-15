@@ -121,12 +121,13 @@ server <- function(input, output) {
       outDta$statistics <- calculation_KL(outDta$data, outDta$data$outObs)
       outDta$annualMean <- annual_mean_KL(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
+      outDta$FDC = FlowDurationCurveKL(outDta$data)
     }
     
     
   })
   
-  output$plotFDC <- renderPlotly({
+  output$plotFDC <- renderPlot({
     if (is.null(outDta$data)) return()
 
     if(input$basin == "KL basin") {
@@ -135,19 +136,40 @@ server <- function(input, output) {
       QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
       A=3.28*1000*1000# plocha KL
       RmKL = QmKL * (3600*24) / A
-      dtaFDC <- data.table(Days =days, ObsFDC =RmKL, SimFDC =outDta$data$FDC)
+      # dtaFDC <- data.frame(Days =days, ObsFDC =RmKL)
+      # KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
+      # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
       
-      # plot = plot(days,RmKL, 
-      #           pch = 19, 
-      #           ylim = range(c(outDta$data$FDC,RmKL)), 
-      #           ylab ="Qm [mm/day]", 
+      
+      # 
+      # qp <- ggplot(data = outDta$FDC, aes(x = Days)) +
+      #   geom_point(aes(y=FDCobs), color = "black") 
+      # qp
+      
+      
+      plot(FDCobs,FDCsim, data = outDta$FDC)
+      
+      # plot1 = plot(outDta$data$FDC$FDCobs,outDta$data$FDC$FDCsim,
+      #           pch = 19,
+      #           ylim = range(c(outDta$data$FDC$FDCsim,outDta$data$FDC$FDCobs)),
+      #           ylab ="Qm [mm/day]",
       #           xlab="Day")
-      # plot = plot + points(days, 
-      #                    outDta$data$FDC, 
-      #                    col="#8f99fb", 
+      # plot1 = plot1 + points(days,
+      #                    outDta$data$FDC,
+      #                    col="#8f99fb",
       #                    pch=19)
-     plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
-        add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
+
+      # 
+      
+      # 
+      # dtaFDC <- data.table(Days =days, ObsFDC =RmKL, SimFDC =outDta$data$FDC)
+      
+     # qqplot(dtaFDC, aes(x=Days,y=ObsFDC)) +
+       # geom_point()
+      # plot(outDta$dta$TOTR,outDta$outObs)
+     # plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
+     #    add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
+     
     }
     
     if(input$basin == "BP basin") {
@@ -157,25 +179,32 @@ server <- function(input, output) {
       QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
       A=4.7*1000*1000# plocha BP
       RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
-      
-      # plot = plot(days,RmBP, 
-      #             pch = 19, 
-      #             ylim = range(c(outDta$data$FDC,RmBP)), 
-      #             ylab ="Qm [mm/day]", 
+      # 
+      # plot1 = plot(days,RmBP,
+      #             pch = 19,
+      #             ylim = range(c(outDta$data$FDC,RmBP)),
+      #             ylab ="Qm [mm/day]",
       #             xlab="Day")
-      dtaFDC <- data.table(Days =days, ObsFDC =RmBP, SimFDC =outDta$data$FDC)
-      
-      # plot = plot(days,RmKL, 
-      #           pch = 19, 
-      #           ylim = range(c(outDta$data$FDC,RmKL)), 
-      #           ylab ="Qm [mm/day]", 
-      #           xlab="Day")
-      # plot = plot + points(days, 
-      #                    outDta$data$FDC, 
-      #                    col="#8f99fb", 
+      # 
+      # 
+      # plot1 = plot1 + points(days,
+      #                    outDta$data$FDC,
+      #                    col="#8f99fb",
       #                    pch=19)
-      plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
-        add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
+      
+      ggplot(outDta$annualMean, aes(x = DTA)) +
+        geom_line(aes(y = meanTOTR), color = "black") +
+        labs(y="Annual Mean", x = "Date")
+      # 
+      # par(mfrow=c(1,2))    # set the plotting area into a 1*2 array
+      # plot1
+      # plot1
+      # plot(outDta$dta$TOTR,outDta$outObs)
+      # dtaFDC <- data.table(Days =days, ObsFDC =RmBP, SimFDC =outDta$data$FDC)
+      # qqplot(data=dtaFDC, aes(x=Days,y=ObsFDC)) +
+        # geom_point()
+      # plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
+      #   add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
        
       }
       })
@@ -217,17 +246,17 @@ server <- function(input, output) {
     
   })
   
-  output$plotTOTR <- renderPlotly({
+  output$plotTOTR <- renderPlot({
     
     if (is.null(outDta$data)) return()
     
     # outDta$data$
     
-    fig <- plot_ly(data =outDta$data$dta, x=~DTM, y=~TOTR, type = 'scatter', mode = 'lines') 
+    # fig <- plot_ly(data =outDta$data$dta, x=~DTM, y=~TOTR, type = 'scatter', mode = 'lines') 
     
-    # ggplot(outDta$data$dta, aes(x = DTM)) +
-    #   geom_line(aes(y = TOTR), color = "#FA9335") +
-    #   labs(y="Total Runoff [mm/day]", x = "Date")
+    ggplot(outDta$data$dta, aes(x = DTM)) +
+      geom_line(aes(y = TOTR), color = "#FA9335") +
+      labs(y="Total Runoff [mm/day]", x = "Date")
     
   })
   
