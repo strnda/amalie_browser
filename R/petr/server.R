@@ -5,6 +5,7 @@ library(dygraphs)
 library(dplyr)
 library(ggplot2)
 library(plotly)
+library(gridExtra)
 
 source("./dHrumBP.R")
 source("./dHrumKL.R")
@@ -132,91 +133,33 @@ server <- function(input, output) {
     if (is.null(outDta$data)) return()
 
     if(input$basin == "KL basin") {
-      days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
-      p_OBS=days/365.25
-      QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
-      A=3.28*1000*1000# plocha KL
-      RmKL = QmKL * (3600*24) / A
-      KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
-      # dtaFDC <- data.frame(Days =days, ObsFDC =RmKL, SimFDC =KLsim)
       dtaFDC <- outDta$FDC
+      dtaTOTR <- data.frame(Sim= outDta$data$dta$TOTR, Obs = outDta$data$outObs)
+      qp1 <- ggplot(data = dtaTOTR, aes(x = Obs)) +
+        geom_point(aes(y=Sim), color = "#8f99fb")
       
-      # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
-      
-      
-      # 
-      qp <- ggplot(data = dtaFDC, aes(x = Days)) +
+      qp2 <- ggplot(data = dtaFDC, aes(x = Days)) +
         geom_point(aes(y=ObsFDC), color = "black")+
         geom_point(aes(y=SimFDC), color = "#8f99fb")
-      qp
       
+      qp<-grid.arrange(qp1,qp2,ncol=2,nrow=1)
       
-      # plot = plot(Days~ObsFDC, data = dtaFDC)
-      # plot
-      
-      # plot1 = plot(outDta$data$FDC$FDCobs,outDta$data$FDC$FDCsim,
-      #           pch = 19,
-      #           ylim = range(c(outDta$data$FDC$FDCsim,outDta$data$FDC$FDCobs)),
-      #           ylab ="Qm [mm/day]",
-      #           xlab="Day")
-      # plot1 = plot1 + points(days,
-      #                    outDta$data$FDC,
-      #                    col="#8f99fb",
-      #                    pch=19)
 
-      # 
-      
-      # 
-      # dtaFDC <- data.table(Days =days, ObsFDC =RmKL, SimFDC =outDta$data$FDC)
-      
-     # qqplot(dtaFDC, aes(x=Days,y=ObsFDC)) +
-       # geom_point()
-      # plot(outDta$dta$TOTR,outDta$outObs)
-     # plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
-     #    add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
      
     }
     
     if(input$basin == "BP basin") {
-      days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
-      p_OBS=days/365.25
-      # RaBP = 96# odhad Martin Hanel
-      QmBP = c(26, 18, 14, 12, 10, 8.0, 7.0, 6.0, 4.5, 3.5, 2.5, 1.0, 0.5)#l/s in 1 day
-      A=4.7*1000*1000# plocha BP
-      RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
-      BPsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
-      dtaFDC <- data.frame(Days =days, ObsFDC =RmBP, SimFDC =BPsim)
+      dtaFDC <- outDta$FDC
+      dtaTOTR <- data.frame(Sim= outDta$data$dta$TOTR, Obs = outDta$data$outObs)
+      qp1 <- ggplot(data = dtaTOTR, aes(x = Obs)) +
+        geom_point(aes(y=Sim), color = "#8f99fb")
       
-      # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
-      
-      
-      # 
-      qp <- ggplot(data = dtaFDC, aes(x = Days)) +
+      qp2 <- ggplot(data = dtaFDC, aes(x = Days)) +
         geom_point(aes(y=ObsFDC), color = "black")+
         geom_point(aes(y=SimFDC), color = "#8f99fb")
-      qp
-      # 
-      # plot1 = plot(days,RmBP,
-      #             pch = 19,
-      #             ylim = range(c(outDta$data$FDC,RmBP)),
-      #             ylab ="Qm [mm/day]",
-      #             xlab="Day")
-      # 
-      # 
-      # plot1 = plot1 + points(days,
-      #                    outDta$data$FDC,
-      #                    col="#8f99fb",
-      #                    pch=19)
-      # par(mfrow=c(1,2))    # set the plotting area into a 1*2 array
-      # plot1
-      # plot1
-      # plot(outDta$dta$TOTR,outDta$outObs)
-      # dtaFDC <- data.table(Days =days, ObsFDC =RmBP, SimFDC =outDta$data$FDC)
-      # qqplot(data=dtaFDC, aes(x=Days,y=ObsFDC)) +
-        # geom_point()
-      # plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
-      #   add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
-       
+      
+      qp<-grid.arrange(qp1,qp2,ncol=2,nrow=1)
+ 
     }
     
     return(qp)
