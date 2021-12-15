@@ -111,12 +111,12 @@ KL_runDHRUM = function(params, gwStor, swStor, start_date, end_date) {
     dtaDF[,JDAY:=NULL]
     
     simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
-    FDCdta = data.frame(Days = days, FDCobs=RmKL, FDCsim = simBest)
+    FDCdta = data.frame(Days = days, ObsFDC=RmKL, SimFDC = simBest)
     
     return (list( dta = copy(dtaDF), outObs = obsTOTR,FDC = FDCdta))
   }
 
   
-  KL_run(pars = parsDF)
+  return(KL_run(pars = parsDF))
   
 }

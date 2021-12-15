@@ -2,6 +2,11 @@ library(hydroGOF)
 library(data.table)
 library(dplyr)
 
+FlowDurationCurveBP<-function(outdta){
+  return(outdta$FDC)
+}
+
+
 annual_mean_EVA_BP <- function(outSimulation, mean_BP) {
   outSimDT <- as.data.table(outSimulation)
   AnnualmeanEVA <- outSimDT[, ':=' (MONTH = month(DTM),
@@ -110,10 +115,11 @@ BP_runDHRUM <- function(params, gwStor, swStor, start_date, end_date) {
     dtaDF[,JDAY:=NULL]
     
     simBest=as.numeric(quantile(dtaDF$TOTR,probs=(1-p_OBS), na.rm = TRUE))
+    FDCdta = data.frame(Days = days, ObsFDC=RmBP, SimFDC = simBest)
     
-    return (list(FDC = simBest, dta = copy(dtaDF), outObs = obsTOTR))
+    return (list(dta = copy(dtaDF), outObs = obsTOTR,FDC = FDCdta))
   }
   
-  BP_run(pars = parsDF)
+  return(BP_run(pars = parsDF))
   
 }

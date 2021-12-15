@@ -108,6 +108,7 @@ server <- function(input, output) {
       outDta$statistics <- calculation_BP(outDta$data, outDta$data$outObs)
       outDta$annualMean <- annual_mean_BP(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
+      outDta$FDC = FlowDurationCurveBP(outDta$data)
       
     }
     
@@ -137,7 +138,8 @@ server <- function(input, output) {
       A=3.28*1000*1000# plocha KL
       RmKL = QmKL * (3600*24) / A
       KLsim = as.numeric(quantile(outDta$data$outObs,probs=(1-p_OBS), na.rm = TRUE))
-      dtaFDC <- data.frame(Days =days, ObsFDC =RmKL, SimFDC =KLsim)
+      # dtaFDC <- data.frame(Days =days, ObsFDC =RmKL, SimFDC =KLsim)
+      dtaFDC <- outDta$FDC
       
       # FDC = data.frame(Days = days, FDCobs=RmKL, FDCsim = KLsim)
       
