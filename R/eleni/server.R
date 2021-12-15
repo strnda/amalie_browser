@@ -126,24 +126,28 @@ server <- function(input, output) {
     
   })
   
-  output$plotFDC <- renderPlot({
-    if (is.null(outDta$data)) return()
+  output$plotFDC <- renderPlotly({
+    # if (is.null(outDta$data)) return()
+
     if(input$basin == "KL basin") {
       days=c(30,60,90,120,150,180,210,240,270,300,330,355,364)
       p_OBS=days/365.25
       QmKL = c(22, 15, 12, 10, 8.5, 6.5, 6.0, 5.0, 3.5, 3.0, 2.0, 1.0, 0.5)
       A=3.28*1000*1000# plocha KL
       RmKL = QmKL * (3600*24) / A
+      dtaFDC <- data.table(Days =days, ObsFDC =RmKL, SimFDC =outDta$data$FDC)
       
-      plot = plot(days,RmKL, 
-                pch = 19, 
-                ylim = range(c(outDta$data$FDC,RmKL)), 
-                ylab ="Qm [mm/day]", 
-                xlab="Day")
-      plot = plot + points(days, 
-                         outDta$data$FDC, 
-                         col="#8f99fb", 
-                         pch=19)
+      # plot = plot(days,RmKL, 
+      #           pch = 19, 
+      #           ylim = range(c(outDta$data$FDC,RmKL)), 
+      #           ylab ="Qm [mm/day]", 
+      #           xlab="Day")
+      # plot = plot + points(days, 
+      #                    outDta$data$FDC, 
+      #                    col="#8f99fb", 
+      #                    pch=19)
+     plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
+        add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
     }
     
     if(input$basin == "BP basin") {
@@ -154,19 +158,27 @@ server <- function(input, output) {
       A=4.7*1000*1000# plocha BP
       RmBP = QmBP * (3600*24) / A #CHMU ZHU mm/day
       
-      plot = plot(days,RmBP, 
-                  pch = 19, 
-                  ylim = range(c(outDta$data$FDC,RmBP)), 
-                  ylab ="Qm [mm/day]", 
-                  xlab="Day")
-      plot = plot + points(days, 
-                           outDta$data$FDC, 
-                           col="#8f99fb", 
-                           pch=19)
-    
+      # plot = plot(days,RmBP, 
+      #             pch = 19, 
+      #             ylim = range(c(outDta$data$FDC,RmBP)), 
+      #             ylab ="Qm [mm/day]", 
+      #             xlab="Day")
+      dtaFDC <- data.table(Days =days, ObsFDC =RmBP, SimFDC =outDta$data$FDC)
+      
+      # plot = plot(days,RmKL, 
+      #           pch = 19, 
+      #           ylim = range(c(outDta$data$FDC,RmKL)), 
+      #           ylab ="Qm [mm/day]", 
+      #           xlab="Day")
+      # plot = plot + points(days, 
+      #                    outDta$data$FDC, 
+      #                    col="#8f99fb", 
+      #                    pch=19)
+      plot_ly(data=dtaFDC, x=~Days, y=~ObsFDC,type="scatter", mode="markers",name="Obs") %>%
+        add_trace(data =dtaFDC,y=~SimFDC, mode = 'markers',name="Sim")
+       
       }
-    
-  })
+      })
   
   output$plotHydrograph <- renderPlotly({
     
@@ -177,6 +189,8 @@ server <- function(input, output) {
       geom_line(aes(y = BASF), color = "#0088D2") +
       labs(y="Q [mm/day]", x = "Date")
     ggplotly(plot)
+    
+    
     
   })
   

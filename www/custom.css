@@ -1,0 +1,61 @@
+/*navbar*/
+.bg-light, .navbar.navbar-default {
+    background-color: #6868ac !important;
+    color: black;
+}
+
+/*sliders*/
+.irs--shiny .irs-bar {
+  background: #6868ac;
+  border-top: 1px solid #6868ac;
+  border-bottom: 1px solid #6868ac;
+}
+
+.irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
+  background-color: #6868ac;
+}
+
+/*navbar*/
+.navbar-nav li:hover {
+  color: #fff;
+}
+
+/* btns and links*/
+.btn-primary {
+  color: #1a152a;
+  background-color: #6868ac;
+  border-color: #6868ac;
+}
+
+a {
+  color: #1a152a;
+}
+
+a:hover {
+  color: #5a5a5a;
+}
+
+navbar-nav li a {
+  color: white !important;
+}
+
+.navbar-header img {
+  filter: brightness(0) invert(1);
+}
+
+/*forms*/
+.form-group label {
+  color: #1a152a !important;
+}
+
+.tab-content {
+  padding-top: 20px;
+}
+
+#table table {
+  color: #6868ac !important;
+}
+
+div.main-container {
+  max-width: 1600px !important;
+}
