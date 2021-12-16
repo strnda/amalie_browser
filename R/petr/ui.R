@@ -104,6 +104,7 @@ library(plotly)
                                                                                    plotOutput("plotAnnualMean", width = "100%"))),
                                                            conditionalPanel(condition = "input.PlotType == 'Time series'",
                                                                             column(width = 12,
+                                                                                   plotOutput("plotPQ", width = "100%"),
                                                                                    plotOutput("plotTOTR", width = "100%"),
                                                                                    plotOutput("plotBASF", width = "100%"),
                                                                                    plotOutput("plotDIRR", width = "100%"))),

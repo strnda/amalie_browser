@@ -202,6 +202,73 @@ server <- function(input, output) {
     
   })
   
+  output$plotPQ <- renderPlot({
+    if (is.null(outDta$data)) return()
+    
+    
+    g1 <- ggplot(outDta$data$dta, aes(DTM, PREC)) +
+      geom_line(col="blue") +
+      theme_bw() +
+      ylab("PREC [mm/day]") +
+      # labs(title = paste0(gName, "@", sName)) +
+      scale_y_reverse()+
+      theme(axis.title.x    = element_blank(),
+            axis.text.x     = element_blank(),
+            axis.ticks.x    = element_blank())
+    
+    
+    g2 <- ggplot(outDta$data$dta, aes(DTM, TOTR))+
+      geom_line() +
+      ylab("TOTR [mm/day]") +
+      # scale_color_manual(values = c("red"")) +
+      theme_bw() +
+      theme(legend.position = c(0.8, 0.8),
+            legend.title    = element_blank())
+    
+    g1 <- ggplot_gtable(ggplot_build(g1))
+    g2 <- ggplot_gtable(ggplot_build(g2))
+    # maxWidth = unit.pmax(g1$widths[2:3], g2$widths[2:3])
+    # g1$widths[2:3] <- maxWidth
+    # g2$widths[2:3] <- maxWidth
+    qqp<- grid.arrange(g1, g2, ncol = 1, heights = c(1.7, 3))
+    # maxRange <- 3*max(outDta$data$dta$TOTR) # set how wide of the first axis (streamflow)
+    # coeff <- 0.4
+    # variable <- 'TOTR'
+    # 
+    # qqp <- ggplot(outDta$data$dta, aes(x = DTM)) +
+    #   geom_tile(aes(y = maxRange - PREC/coeff/2, 
+    #                 height = PREC/coeff, 
+    #                 fill = 'PColor')
+    #   )+
+    #   # Plot your discharge data
+    #   geom_line(aes(y = TOTR,
+    #                 color = variable), 
+    #             alpha = 0.8,
+    #             size = 0.4) +
+    #   # Create a second axis with sec_axis() and format the labels to display the original precipitation units.
+    #   scale_y_continuous(name = "TOTR [mm/day]",
+    #                      limit = c(0, maxRange),
+    #                      expand = c(0, 0),
+    #                      sec.axis = sec_axis(trans = ~(.-maxRange)*coeff,
+    #                                          name = "PREC [mm/day]"))+
+    #   scale_fill_manual(values = c('PColor' = "#386cb0"),
+    #                     labels = c('PColor' = 'Precipitation'),
+    #                     name = NULL
+    #   )+
+    #   scale_color_manual(values = c('black', '#e41a1c'), 
+    #                      name = NULL)+
+    #   theme_bw()+
+    #   guides(color = guide_legend(nrow = 1)) +
+    #   theme(
+    #     # legend.position = c(0.75, 0.5),
+    #     legend.position = 'top',
+    #     panel.grid.major = element_blank(),
+    #     panel.grid.minor = element_blank())
+    
+    return(qqp)
+    
+  })
+  
   output$plotTOTR <- renderPlot({
     
     if (is.null(outDta$data)) return()
