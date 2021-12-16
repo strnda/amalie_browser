@@ -18,7 +18,7 @@ shinyAppFile(appFile = "./R/petr/app.R",
 
 ## Filip - data
 
-```{r phill, echo = FALSE, message=FALSE}
+```{r phill, echo = FALSE, message=FALSE, warning=FALSE}
 library(sf); library(leaflet); library(data.table)
 
 hru <- st_read(dsn = "./data/hru_info.shp")
