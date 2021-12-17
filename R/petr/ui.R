@@ -82,9 +82,9 @@ library(plotly)
                                                     column(width = 4, 
                                                            sliderInput("date_range", 
                                                                        "Choose a time window:", 
-                                                                       min = as.POSIXct("1960-01-01"), 
-                                                                       max = as.POSIXct("2020-12-31"), 
-                                                                       value = c(as.POSIXct("1960-01-01"), as.POSIXct("2020-12-30")), 
+                                                                       min = as.POSIXct("1961-01-01"), 
+                                                                       max = as.POSIXct("2021-12-08"), 
+                                                                       value = c(as.POSIXct("1961-01-01"), as.POSIXct("2021-12-08")), 
                                                                        step = 1,
                                                                        format,
                                                                        timeFormat = "%Y-%m-%d"
