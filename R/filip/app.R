@@ -3,8 +3,17 @@ library(leaflet)
 library(sf)
 library(data.table)
 library(ggplot2)
+library(bslib)
 
 ui <- fluidPage(
+  
+  theme = bs_theme(
+    bg = "#0b3d91", 
+    fg = "white", 
+    primary = "#FCC780",
+    base_font = font_google("Space Mono"),
+    code_font = font_google("Space Mono")
+  ),
   
   title = 'shiny',
   
