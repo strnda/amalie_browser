@@ -10,17 +10,17 @@
   border-top: 1px solid #6868ac;
   border-bottom: 1px solid #6868ac;
 }
-/*
+
 .irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
   background-color: #6868ac;
-}*/
-
+}
+/*
 .irs-slider { width: 8px; height: 20px; top: 20px; background: green; },
 
                   .irs-slider.from { width: 8px; height: 20px; top: 20px; background: red; }
                   
                   .irs-slider.to { width: 8px; height: 20px; top: 20px; background: orange; }
-
+*/
 /*navbar*/
 .navbar-nav li:hover {
   color: #fff;
