@@ -84,7 +84,7 @@ library(plotly)
                                                                        "Choose a time window:", 
                                                                        min = as.POSIXct("1961-01-01"), 
                                                                        max = as.POSIXct("2021-12-08"), 
-                                                                       value = c(as.POSIXct("1961-01-01"), as.POSIXct("2021-12-08")), 
+                                                                       value = c(as.POSIXct("2001-01-01"), as.POSIXct("2021-12-08")), 
                                                                        step = 1,
                                                                        format,
                                                                        timeFormat = "%Y-%m-%d"
@@ -99,15 +99,17 @@ library(plotly)
                                                     column(width = 9,
                                                            conditionalPanel(condition = "input.PlotType == 'Model performance'",
                                                                             column(width = 12,
-                                                                                   plotOutput("plotFDC", width = "100%"),
+                                                                                   plotOutput("plotFDC", width = "100%")#,
                                                                                    # plotlyOutput("plotHydrograph", width = "100%"),
-                                                                                   plotOutput("plotAnnualMean", width = "100%"))),
+                                                                                   # plotOutput("plotAnnualMean", width = "100%")
+                                                                                )),
                                                            conditionalPanel(condition = "input.PlotType == 'Time series'",
                                                                             column(width = 12,
-                                                                                   plotOutput("plotPQ", width = "100%"),
-                                                                                   plotOutput("plotTOTR", width = "100%"),
-                                                                                   plotOutput("plotBASF", width = "100%"),
-                                                                                   plotOutput("plotDIRR", width = "100%"))),
+                                                                                   plotOutput("plotPQ", width = "100%")
+                                                                                   # plotOutput("plotTOTR", width = "100%"),
+                                                                                   # plotOutput("plotBASF", width = "100%"),
+                                                                                   # plotOutput("plotDIRR", width = "100%")
+                                                                                   )),
                                                            conditionalPanel(condition = "input.PlotType == 'State variables'",
                                                                             column(width = 12,
                                                                                    plotOutput("plotSOIS", width = "100%"),
@@ -117,8 +119,9 @@ library(plotly)
                                                                             column(width = 12,
                                                                                    plotOutput("plotPET", width = "100%"),
                                                                                    plotOutput("plotAET", width = "100%"),
-                                                                                   plotOutput("plotEVBS", width = "100%"),
-                                                                                   plotlyOutput("plotAnnualMeanEVA", width = "100%")))
+                                                                                   plotOutput("plotEVBS", width = "100%")#,
+                                                                                   # plotlyOutput("plotAnnualMeanEVA", width = "100%")
+                                                                                   ))
                                                     ),
                                                     column(width = 3,
                                                            tableOutput("table"),
