@@ -2,20 +2,21 @@ library(shiny)
 library(leaflet)
 library(sf)
 library(data.table)
+library(ggplot2)
 
 ui <- fluidPage(
   
   title = 'shiny',
   
-  titlePanel(title = 'shiny'),
-  
-  leafletOutput(outputId = 'map'),
-  
-  hr(),
+  titlePanel(title = 'title placeholder'),
   
   fluidRow(
-    textOutput(outputId = "click")
-  ),
+    column(5,
+           leafletOutput(outputId = 'map')),
+    column(7,
+           textOutput(outputId = "click"),
+           plotOutput(outputId = "plot"))
+  )
 )
 
 server <- function(input, output, session) {
@@ -28,9 +29,9 @@ server <- function(input, output, session) {
   dendro <- fread(input = "./data/dendrometer_info.csv")
   
   vrty <- fread(input = "./data/vrty_info.csv")
-  vrty <- vrty[grep(pattern = "0",
-                    x = name,
-                    invert = TRUE),]
+  # vrty <- vrty[grep(pattern = "0",
+  #                   x = name,
+  #                   invert = TRUE),]
   
   mikroklima <- fread(input = "./data/mikroklima.csv")
   
@@ -58,14 +59,14 @@ server <- function(input, output, session) {
       addMarkers(data = mikroklima,
                  lng = ~Y,
                  lat = ~X,
-                 layerId = ~name,
+                 layerId = ~ID,
                  label = mikroklima$name,
                  clusterOptions = markerClusterOptions(),
                  group = "Mikroklima") %>% 
       addMarkers(data = eddy,
                  lng = ~Y,
                  lat = ~X,
-                 layerId = ~name,
+                 layerId = ~ID,
                  label = eddy$name,
                  clusterOptions = markerClusterOptions(),
                  group = 'Stanice "Lihovar"') %>% 
@@ -132,6 +133,28 @@ server <- function(input, output, session) {
 
       })
       
+      output$plot <- renderPlot({
+        
+        df <- data.frame(
+          gp = factor(rep(letters[1:3], each = 10)),
+          y = rnorm(30)
+        )
+        ds <- do.call(rbind, lapply(split(df, df$gp), function(d) {
+          data.frame(mean = mean(d$y), sd = sd(d$y), gp = d$gp)
+        }))
+        
+        ggplot() +
+          geom_point(data = df, aes(gp, y)) +
+          geom_point(data = ds, aes(gp, mean), colour = 'red', size = 3) +
+          labs(title = nfo_sensors[which(x = (ID == click$id)), senzor]) +
+          geom_errorbar(
+            data = ds,
+            aes(gp, mean, ymin = mean - sd, ymax = mean + sd),
+            colour = 'red',
+            width = 0.4
+          ) +
+          theme_bw()
+        })
     }
   })
 }
