@@ -1,13 +1,15 @@
 library(sf); library(leaflet); library(data.table)
 
-hru <- st_read(dsn = "./data/hru_info.shp")
+hru <- st_read(dsn = "./data/hru_info.shp", 
+               quiet = TRUE)
 tmst <- fread(input = "./data/soil_moisture_sensor_info.csv")
 dendro <- fread(input = "./data/dendrometer_info.csv")
 vrty <- fread(input = "./data/vrty_info.csv")
-vrty <- vrty[vrty$Stav == "Ano",]
-
-
-head(x = hru)
+vrty <- vrty[grep(pattern = "0",
+                  x = name,
+                  invert = TRUE),]
+mikroklima <- fread(input = "./data/mikroklima.csv")
+eddy <- fread(input = "./data/eddy.csv")
 
 leaflet() %>% 
   addTiles(group = "Podkladová mapa") %>%
@@ -19,20 +21,37 @@ leaflet() %>%
   addMarkers(data = vrty,
              lng = ~X,
              lat = ~Y,
+             layerId = ~name,
              label = paste("Vrt:",
                            vrty$name),
              clusterOptions = markerClusterOptions(),
              group = "Vrty") %>% 
+  addMarkers(data = mikroklima,
+             lng = ~Y,
+             lat = ~X,
+             layerId = ~name,
+             label = mikroklima$name,
+             clusterOptions = markerClusterOptions(),
+             group = "Mikroklima") %>% 
+  addMarkers(data = eddy,
+             lng = ~Y,
+             lat = ~X,
+             layerId = ~name,
+             label = eddy$name,
+             clusterOptions = markerClusterOptions(),
+             group = 'Stanice "Lihovar"') %>% 
   addMarkers(data = tmst,
              lng = ~X,
              lat = ~Y,
+             layerId = ~ID,
              label = paste("Vlkhost senzor:",
-                           tmst$serial_number),
+                           tmst$ID),
              clusterOptions = markerClusterOptions(),
              group = "Vlhkostní senzory") %>% 
   addMarkers(data = dendro,
              lng = ~X,
              lat = ~Y,
+             layerId = ~ID,
              label = paste("Dendrometr:",
                            dendro$ID),
              clusterOptions = markerClusterOptions(),
@@ -62,61 +81,9 @@ leaflet() %>%
                    overlayGroups = c("Polygony hydr. jednotek", 
                                      "Vrty",
                                      "Vlhkostní senzory",
-                                     "Dendrometry"),
+                                     "Dendrometry",
+                                     "Mikroklima",
+                                     'Stanice "Lihovar"'),
                    options = layersControlOptions(collapsed = TRUE))
 
 
-# fls <- list.files(path = "/media/phill/Extreme SSD/ups/", 
-#                   pattern = ".shp", 
-#                   full.names = TRUE, 
-#                   recursive = TRUE)
-# fls <- fls[grep(pattern = "xml|sr.lock", 
-#                 invert = TRUE,
-#                 x = fls)]
-# 
-# shp_dta <- lapply(X = fls, 
-#                   FUN = st_read)
-# shp_dta <- lapply(X = shp_dta, 
-#                   FUN = st_transform,
-#                   crs = 4326)
-# nfo <- sapply(X = shp_dta,
-#               FUN = names)
-# do.call(what = cbind, 
-#         args = nfo)
-# 
-# plot(shp_dta[[1]])
-# 
-# st_transform(x = shp_dta[[1]], 
-#              crs = 4326)
-# 
-# 
-# 
-# tmst_1 <- read_excel(path = "data_raw/databaze TOMST BP+KL.xlsx",
-#                      sheet = "sensors", 
-#                      skip = 1)
-# tmst_2 <- read_excel(path = "./data_raw/databaze TOMST IGA_29_11_21_l_uprava.xlsx",
-#                      sheet = "sensors", 
-#                      skip = 1)
-#                      
-## zacatek mereni cerven 2021
-# library(jsonlite)
-# x <- read_json(path = "https://user:ARQwAe8EBW3kJV3v@api.nod.czu.bluebeatle.cz/data/all?from=2021-07-18&to=2021-07-22")
-# 
-# head(x)
-# 
-# y <- do.call(rbind,
-#              x)
-# head(y)
-
-vrty_1 <- st_read(dsn = "~/Desktop/Fila_vrty/Melke_vrty_Rago.shp")
-vrty_2 <- st_read(dsn = "~/Desktop/Fila_vrty/Vrty_2021_verzeV.shp")
-vrty_2 <- st_transform(x = vrty_2,
-                       crs = 4326)
-
-vrty_2 <- cbind(vrty_2, st_coordinates(x = vrty_2))
-
-fwrite(x = vrty_2[, c("name", "Stav", "LandUse", "X", "Y")],
-       file = "./data/vrty_info.csv")
-
-
-plot(vrty_2)
