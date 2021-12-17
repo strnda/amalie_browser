@@ -99,7 +99,8 @@ library(plotly)
                                                     column(width = 9,
                                                            conditionalPanel(condition = "input.PlotType == 'Model performance'",
                                                                             column(width = 12,
-                                                                                   plotOutput("plotFDC", width = "100%")#,
+                                                                                   plotOutput("plotPQsimobs", width = "100%"),
+                                                                                   plotOutput("plotFDC", width = "100%")
                                                                                    # plotlyOutput("plotHydrograph", width = "100%"),
                                                                                    # plotOutput("plotAnnualMean", width = "100%")
                                                                                 )),
