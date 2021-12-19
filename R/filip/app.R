@@ -3,17 +3,17 @@ library(leaflet)
 library(sf)
 library(data.table)
 library(ggplot2)
-library(bslib)
+library(fst)
 
 ui <- fluidPage(
   
-  theme = bs_theme(
-    bg = "#0b3d91", 
-    fg = "white", 
-    primary = "#FCC780",
-    base_font = font_google("Space Mono"),
-    code_font = font_google("Space Mono")
-  ),
+  # theme = bs_theme(
+  #   bg = "#0b3d91", 
+  #   fg = "white", 
+  #   primary = "#FCC780",
+  #   base_font = font_google("Space Mono"),
+  #   code_font = font_google("Space Mono")
+  # ),
   
   title = 'shiny',
   
@@ -32,22 +32,24 @@ server <- function(input, output, session) {
   
   hru <- st_read(dsn = "./data/hru_info.shp", 
                  quiet = TRUE)
-  
   tmst <- fread(input = "./data/soil_moisture_sensor_info.csv")
-  
   dendro <- fread(input = "./data/dendrometer_info.csv")
-  
-  vrty <- fread(input = "./data/vrty_info.csv")
+  # vrty <- fread(input = "./data/vrty_info.csv")
   # vrty <- vrty[grep(pattern = "0",
   #                   x = name,
   #                   invert = TRUE),]
-  
   mikroklima <- fread(input = "./data/mikroklima.csv")
-  
   eddy <- fread(input = "./data/eddy.csv")
+  vrty <- read_fst(path = "./data/vrty_info.fst")
   
-  nfo_sensors <- fread(input = "./data/nfo_sensors.csv")
-
+  nfo_sensors <- as.data.table(read_fst(path = "./data/nfo_sensors.fst"))
+  
+  vrty_dta <- as.data.table(read_fst(path = "./data/vrty.fst"))
+  vlhkost_dta <- as.data.table(read_fst(path = "./data/vlhkost_od_lukase.fst"))
+  dendro_dta <- as.data.table(read_fst(path = "./data/dendro.fst"))
+  mikroklima_dta <- as.data.table(read_fst(path = "./data/mikroklima.fst"))
+  eddy_dta <- as.data.table(read_fst(path = "./data/eddy.fst"))
+  
   output$map <- renderLeaflet({
     
     leaflet() %>% 
@@ -58,9 +60,9 @@ server <- function(input, output, session) {
                   layers = "GR_ORTFOTORGB",
                   group = "Ortofoto") %>%
       addMarkers(data = vrty,
-                 lng = ~X,
-                 lat = ~Y,
-                 layerId = ~name,
+                 lng = ~Y,
+                 lat = ~X,
+                 layerId = ~ID,
                  label = paste("Vrt:",
                                vrty$name),
                  clusterOptions = markerClusterOptions(),
@@ -83,7 +85,7 @@ server <- function(input, output, session) {
                  lng = ~X,
                  lat = ~Y,
                  layerId = ~ID,
-                 label = paste("Vlkhost senzor:",
+                 label = paste("Vlkhostní senzor:",
                                tmst$ID),
                  clusterOptions = markerClusterOptions(),
                  group = "Vlhkostní senzory") %>% 
@@ -124,7 +126,7 @@ server <- function(input, output, session) {
                                          "Mikroklima",
                                          'Stanice "Lihovar"'),
                        options = layersControlOptions(collapsed = TRUE))
-    })
+  })
   
   observe({
     
@@ -134,36 +136,54 @@ server <- function(input, output, session) {
       
       return()
     } else {
-    
+      
       output$click <- renderPrint({
         
         print(list(X = click$id,
                    senzor = nfo_sensors[which(x = (ID == click$id)), senzor]))
-
+        
       })
+      
+      # "tmst"       "dendro"     "mikroklima" "eddy"       "vrt" 
+      
+      sens_click <- nfo_sensors[which(x = (ID == click$id)), senzor]
+      
+      if (sens_click == "tmst") {
+        
+        dta_plot <- vlhkost_dta[ID == click$id,]
+      }
+      
+      if (sens_click == "dendro") {
+        
+        dta_plot <- dendro_dta[ID == click$id,]
+      }
+      
+      if (sens_click == "mikroklima") {
+        
+        dta_plot <- mikroklima_dta[ID == click$id,]
+      }
+
+      if (sens_click == "eddy") {
+        
+        dta_plot <- eddy_dta[ID == click$id,]
+      }
+      
+      if (sens_click == "vrt") {
+        
+        dta_plot <- vrty_dta[ID == click$id,]
+      }
       
       output$plot <- renderPlot({
         
-        df <- data.frame(
-          gp = factor(rep(letters[1:3], each = 10)),
-          y = rnorm(30)
-        )
-        ds <- do.call(rbind, lapply(split(df, df$gp), function(d) {
-          data.frame(mean = mean(d$y), sd = sd(d$y), gp = d$gp)
-        }))
-        
-        ggplot() +
-          geom_point(data = df, aes(gp, y)) +
-          geom_point(data = ds, aes(gp, mean), colour = 'red', size = 3) +
-          labs(title = nfo_sensors[which(x = (ID == click$id)), senzor]) +
-          geom_errorbar(
-            data = ds,
-            aes(gp, mean, ymin = mean - sd, ymax = mean + sd),
-            colour = 'red',
-            width = 0.4
-          ) +
+        ggplot(data = dta_plot) +
+          geom_line(mapping = aes(x = date,
+                                  y = value,
+                                  group = variable)) +
+          facet_wrap(facets = ID ~ variable,
+                     scales = "free", 
+                     ncol = 1) +
           theme_bw()
-        })
+      })
     }
   })
 }
