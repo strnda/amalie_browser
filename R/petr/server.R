@@ -7,6 +7,7 @@ library(ggplot2)
 library(plotly)
 library(gridExtra)
 
+
 source("./dHrumBP.R")
 source("./dHrumKL.R")
 
@@ -132,35 +133,39 @@ server <- function(input, output) {
   output$plotFDC <- renderPlot({
     if (is.null(outDta$data)) return()
 
-    if(input$basin == "KL basin") {
+    # if(input$basin == "KL basin") {
+    #   dtaFDC <- outDta$FDC
+    #   dtaTOTR <- data.frame(Sim= outDta$data$dta$TOTR, Obs = outDta$data$outObs)
+    #   qp1 <- ggplot(data = dtaTOTR, aes(x = Obs)) +
+    #     geom_point(aes(y=Sim), color = "#8f99fb") +
+    #     theme_bw()
+    #   
+    #   qp2 <- ggplot(data = dtaFDC, aes(x = Days)) +
+    #     geom_point(aes(y=ObsFDC), color = "black")+
+    #     geom_point(aes(y=SimFDC), color = "#8f99fb") +
+    #     theme_bw()
+    #   
+    #   qp<-grid.arrange(qp1,qp2,ncol=2,nrow=1)
+    #   
+    # 
+    #  
+    # }
+    # 
+    # if(input$basin == "BP basin") {
       dtaFDC <- outDta$FDC
       dtaTOTR <- data.frame(Sim= outDta$data$dta$TOTR, Obs = outDta$data$outObs)
       qp1 <- ggplot(data = dtaTOTR, aes(x = Obs)) +
-        geom_point(aes(y=Sim), color = "#8f99fb")
+        geom_point(aes(y=Sim), color = "#8f99fb") +
+        theme_bw()
       
       qp2 <- ggplot(data = dtaFDC, aes(x = Days)) +
         geom_point(aes(y=ObsFDC), color = "black")+
-        geom_point(aes(y=SimFDC), color = "#8f99fb")
-      
-      qp<-grid.arrange(qp1,qp2,ncol=2,nrow=1)
-      
-
-     
-    }
-    
-    if(input$basin == "BP basin") {
-      dtaFDC <- outDta$FDC
-      dtaTOTR <- data.frame(Sim= outDta$data$dta$TOTR, Obs = outDta$data$outObs)
-      qp1 <- ggplot(data = dtaTOTR, aes(x = Obs)) +
-        geom_point(aes(y=Sim), color = "#8f99fb")
-      
-      qp2 <- ggplot(data = dtaFDC, aes(x = Days)) +
-        geom_point(aes(y=ObsFDC), color = "black")+
-        geom_point(aes(y=SimFDC), color = "#8f99fb")
+        geom_point(aes(y=SimFDC), color = "#8f99fb") +
+        theme_bw()
       
       qp<-grid.arrange(qp1,qp2,ncol=2,nrow=1)
  
-    }
+    # }
     
     return(qp)
       })
@@ -210,65 +215,94 @@ server <- function(input, output) {
       geom_line(col="blue") +
       theme_bw() +
       ylab("PREC [mm/day]") +
-      # labs(title = paste0(gName, "@", sName)) +
+
       scale_y_reverse()+
+      theme_bw() +
       theme(axis.title.x    = element_blank(),
             axis.text.x     = element_blank(),
-            axis.ticks.x    = element_blank())
-    
+            axis.ticks.x    = element_blank(),
+            axis.line = element_blank()
+            )+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank()
+      )
     
     g2 <- ggplot(outDta$data$dta, aes(DTM, TOTR))+
-      geom_line() +
+      geom_line(col='#8f99fb') +
       ylab("TOTR [mm/day]") +
-      # scale_color_manual(values = c("red"")) +
       theme_bw() +
-      theme(legend.position = c(0.8, 0.8),
-            legend.title    = element_blank())
+      # theme(legend.position = c(0.8, 0.8),
+      #       legend.title    = element_blank())+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
     
     g1 <- ggplot_gtable(ggplot_build(g1))
     g2 <- ggplot_gtable(ggplot_build(g2))
-    # maxWidth = unit.pmax(g1$widths[2:3], g2$widths[2:3])
-    # g1$widths[2:3] <- maxWidth
-    # g2$widths[2:3] <- maxWidth
     qqp<- grid.arrange(g1, g2, ncol = 1, heights = c(1.7, 3))
-    # maxRange <- 3*max(outDta$data$dta$TOTR) # set how wide of the first axis (streamflow)
-    # coeff <- 0.4
-    # variable <- 'TOTR'
-    # 
-    # qqp <- ggplot(outDta$data$dta, aes(x = DTM)) +
-    #   geom_tile(aes(y = maxRange - PREC/coeff/2, 
-    #                 height = PREC/coeff, 
-    #                 fill = 'PColor')
-    #   )+
-    #   # Plot your discharge data
-    #   geom_line(aes(y = TOTR,
-    #                 color = variable), 
-    #             alpha = 0.8,
-    #             size = 0.4) +
-    #   # Create a second axis with sec_axis() and format the labels to display the original precipitation units.
-    #   scale_y_continuous(name = "TOTR [mm/day]",
-    #                      limit = c(0, maxRange),
-    #                      expand = c(0, 0),
-    #                      sec.axis = sec_axis(trans = ~(.-maxRange)*coeff,
-    #                                          name = "PREC [mm/day]"))+
-    #   scale_fill_manual(values = c('PColor' = "#386cb0"),
-    #                     labels = c('PColor' = 'Precipitation'),
-    #                     name = NULL
-    #   )+
-    #   scale_color_manual(values = c('black', '#e41a1c'), 
-    #                      name = NULL)+
-    #   theme_bw()+
-    #   guides(color = guide_legend(nrow = 1)) +
-    #   theme(
-    #     # legend.position = c(0.75, 0.5),
-    #     legend.position = 'top',
-    #     panel.grid.major = element_blank(),
-    #     panel.grid.minor = element_blank())
+
+    
+    return(qqp)
+    
+  })
+
+  output$plotPQsimobs <- renderPlot({
+    if (is.null(outDta$data)) return()
+    
+    DT = data.table(outDta$data$dta)
+    DT[,Obs :=outDta$data$outObs]
+    outDta$data$outObs
+    
+    
+    g1 <- ggplot(DT, aes(DTM, PREC)) +
+      geom_line(col="blue") +
+      ylab("PREC [mm/day]") +
+      scale_y_reverse()+
+      theme_bw() +
+      theme(axis.title.x    = element_blank(),
+            axis.text.x     = element_blank(),
+            axis.ticks.x    = element_blank(),
+            axis.line = element_blank()
+      )+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_blank()
+      )
+    colors <- c('Obs' = '#033E3E', 'Sim' = '#8f99fb')
+    g2 <- ggplot(DT, aes(x=DTM))+
+      geom_line(aes(y= TOTR, color="Sim"))+
+      geom_line(aes(y=Obs, color="Obs"))+
+      ylab("TOTR [mm/day]") +
+      scale_color_manual(values = colors)+
+      theme_bw() +
+      theme(legend.position = c(0.9, 0.9),
+            legend.title    = element_blank())+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
+    
+    g1 <- ggplot_gtable(ggplot_build(g1))
+    g2 <- ggplot_gtable(ggplot_build(g2))
+    qqp<- grid.arrange(g1, g2, ncol = 1, heights = c(1.7, 3))
+    
     
     return(qqp)
     
   })
   
+  
+    
   output$plotTOTR <- renderPlot({
     
     if (is.null(outDta$data)) return()
@@ -307,10 +341,20 @@ server <- function(input, output) {
   output$plotSOIS <- renderPlot({
     
     if (is.null(outDta$data)) return()
+    DT=copy(outDta$data$dta)
     
-    ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = SOIS), color = "#6868ac") +
-      labs(y="Soil storage", x = "Date")
+    ggplot(data = DT, aes(x = DTM)) +
+      # geom_area( fill="#6868ac", alpha=0.4) +
+      geom_line(aes(y=SOIS), color="#6868ac", size=0.7) +
+      # geom_point(size=0.5, color="#6868ac") +
+      theme_bw() +
+      labs(y="Soil storage [mm]", x = "Date")+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
     
     
   })
@@ -318,19 +362,39 @@ server <- function(input, output) {
   output$plotGROS <- renderPlot({
     
     if (is.null(outDta$data)) return()
+    DT=copy(outDta$data$dta)
     
-    ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = GROS), color = "black") +
-      labs(y="Groundwater storage", x = "Date")
+    ggplot(data = DT, aes(x = DTM)) +
+      # geom_area( fill="#2B3856", alpha=0.4) +
+      geom_line(aes(y = GROS),color="#2B3856", size=0.7) +
+      # geom_point(size=0.5, color="#2B3856") +
+      theme_bw() +
+      labs(y="Groundwater storage [mm]", x = "Date")+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
   })
   
   output$plotSURS <- renderPlot({
     
     if (is.null(outDta$data)) return()
+    DT=copy(outDta$data$dta)
     
-    ggplot(outDta$data$dta, aes(x = DTM)) +
-      geom_line(aes(y = SURS), color = "#BB907F") +
-      labs(y="Surface retention", x = "Date")
+    ggplot(data = DT, aes(x = DTM)) +
+      # geom_area( fill="#87AFC7", alpha=0.4) +
+      geom_line(aes(y = SURS),color="#87AFC7", size=0.7) +
+      # geom_point(size=0.5, color="#87AFC7") +
+      theme_bw() +
+      labs(y="Surface retention [mm]", x = "Date")+
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
    
     
   })
@@ -341,7 +405,14 @@ server <- function(input, output) {
     
     ggplot(outDta$data$dta, aes(x = DTM)) +
       geom_line(aes(y = PET), color = "#6868ac") +
-      labs(y="Potential Evapotranspiration", x = "Date")
+      labs(y="Potential Evapotranspiration [mm/day]", x = "Date")+
+      theme_bw() +
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
     
   })
   
@@ -351,7 +422,14 @@ server <- function(input, output) {
     
     ggplot(outDta$data$dta, aes(x = DTM)) +
       geom_line(aes(y = AET), color = "#F8CF2C") +
-      labs(y="Actual Evapotranspiration", x = "Date")
+      labs(y="Actual Evapotranspiration  [mm/day]", x = "Date")+
+      theme_bw() +
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
     
   })
   
@@ -362,7 +440,14 @@ server <- function(input, output) {
     
     ggplot(outDta$data$dta, aes(x = DTM)) +
       geom_line(aes(y = EVBS), color = "#B77252") +
-      labs(y="Bare soil Evapotranspiration", x = "Date")
+      labs(y="Soil Evaporation and Transpiration  [mm/day]", x = "Date")+
+      theme_bw() +
+      theme(
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")
+      )
     
   })
   

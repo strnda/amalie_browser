@@ -15,7 +15,7 @@ shinyAppFile(appFile = "./R/filip/app.R",
                             height = 1050))
 ```
 
-## dHRUM - The parametrisation of single HRU unit 
+## dHRUM - The Single HRU 
 
 ```{r petr, echo = FALSE, message = FALSE, warning = FALSE, cache=FALSE}
 shinyAppFile(appFile = "./R/petr/app.R",
