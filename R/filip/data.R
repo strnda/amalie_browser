@@ -182,3 +182,51 @@ write_fst(x = dta,
 
 ## vrty ####
 
+## rds ####
+
+ls <- list.files(path = "~/Desktop/",
+                 pattern = ".rds",
+                 full.names = TRUE)
+
+dta_all <- lapply(X = ls,
+                  FUN = readRDS)
+
+tms <- sapply(X = dta_all[grep(pattern = "tms4", 
+                               x = ls, 
+                               ignore.case = TRUE)], 
+              FUN = "[", 1)
+
+tms <- rbindlist(l = tms, 
+                 fill = TRUE)
+
+tms <- unique(x = tms[, .(DTM, ID, T1, T2, T3, vlhNK)])
+
+setnames(x = tms, 
+         old = c("DTM", "vlhNK"),
+         new = c("date", "vlhkost"))
+
+dta_m <- melt(data = tms, 
+              id.vars = c("ID", "date"))
+
+dta <- dta_m[, .(value = mean(x = value, 
+                              na.rm  = TRUE)), 
+             by = .(ID, date = format(x = date,
+                                      format = "%Y-%m-%d"), variable)]
+
+str(object = dta)
+
+dta[, `:=`(date = as.IDate(x = date),
+           ID = as.factor(x = ID))]
+
+str(object = dta)
+dta
+
+write_fst(x = dta,
+          path = "./data/vlhkost_od_lukase.fst")
+
+## vrty vosko ####
+
+vrty <- dta_all[grep(pattern = "tms4", 
+                     x = ls, 
+                     ignore.case = TRUE, 
+                     invert = TRUE)]
