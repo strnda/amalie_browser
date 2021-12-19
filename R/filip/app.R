@@ -17,14 +17,17 @@ ui <- fluidPage(
   
   title = 'shiny',
   
-  titlePanel(title = 'title placeholder'),
+  # titlePanel(title = 'title placeholder'),
   
-  fluidRow(
-    column(5,
-           leafletOutput(outputId = 'map')),
-    column(7,
-           textOutput(outputId = "click"),
-           plotOutput(outputId = "plot"))
+  fluidPage(
+    column(width = 5,
+           leafletOutput(outputId = 'map',
+                         height = 600),
+           tableOutput(outputId = "summary_table")),
+    column(width = 7,
+           # textOutput(outputId = "click"),
+           plotOutput(outputId = "plot",
+                      height = 900))
   )
 )
 
@@ -137,13 +140,13 @@ server <- function(input, output, session) {
       return()
     } else {
       
-      output$click <- renderPrint({
-        
-        print(list(X = click$id,
-                   senzor = nfo_sensors[which(x = (ID == click$id)), senzor]))
-        
-      })
-      
+      # output$click <- renderPrint({
+      #   
+      #   print(list(X = click$id,
+      #              senzor = nfo_sensors[which(x = (ID == click$id)), senzor]))
+      #   
+      # })
+      # 
       # "tmst"       "dendro"     "mikroklima" "eddy"       "vrt" 
       
       sens_click <- nfo_sensors[which(x = (ID == click$id)), senzor]
@@ -179,11 +182,17 @@ server <- function(input, output, session) {
           geom_line(mapping = aes(x = date,
                                   y = value,
                                   group = variable)) +
-          facet_wrap(facets = ID ~ variable,
+          facet_wrap(facets = ~variable,
                      scales = "free", 
                      ncol = 1) +
           theme_bw()
       })
+      
+      output$summary_table <- renderTable({
+        
+        summary(dta_plot)
+      })
+
     }
   })
 }
