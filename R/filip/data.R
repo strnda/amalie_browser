@@ -212,11 +212,11 @@ dta <- dta_m[, .(value = mean(x = value,
                               na.rm  = TRUE)), 
              by = .(ID, date = format(x = date,
                                       format = "%Y-%m-%d"), variable)]
-
 str(object = dta)
 
 dta[, `:=`(date = as.IDate(x = date),
-           ID = as.factor(x = ID))]
+           ID = as.factor(x = ID),
+           variable = tolower(x = variable))]
 
 str(object = dta)
 dta
@@ -229,4 +229,18 @@ write_fst(x = dta,
 vrty <- dta_all[grep(pattern = "tms4", 
                      x = ls, 
                      ignore.case = TRUE, 
-                     invert = TRUE)]
+                     invert = TRUE)][[1]]
+
+vrty <- vrty[, .(ID, DTM, HLADINA, TEPLOTA)]
+
+setnames(x = vrty, 
+         old = c("DTM"),
+         new = c("date"))
+
+dta_m <- melt(data = vrty, 
+              id.vars = c("ID", "date"))
+
+dta_m[, variable := tolower(x = variable)]
+
+write_fst(x = dta,
+          path = "./data/vrty.fst")
