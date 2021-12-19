@@ -231,6 +231,40 @@ vrty <- dta_all[grep(pattern = "tms4",
                      ignore.case = TRUE, 
                      invert = TRUE)][[1]]
 
+vrty_nfo <- unique(x = vrty[, .(ID, x, y)])
+
+names(vrty_nfo) <- toupper(x = names(x = vrty_nfo))
+
+vrty_nfo[, `:=`(ID = as.factor(x = ID),
+                X = as.numeric(x = gsub(pattern = "N", 
+                                        replacement = "",
+                                        x = X)),
+                Y = as.numeric(x = gsub(pattern = "N", 
+                                        replacement = "",
+                                        x = Y)))]
+
+str(vrty_nfo)
+
+vrty_meta <- as.data.table(readxl::read_xlsx(path = "~/Desktop/vrty evidence základní.xlsx"))
+setnames(x = vrty_meta, 
+         old = "...2", 
+         new = "name")
+
+vrty_nfo <- merge(x = vrty_nfo, 
+                  y = vrty_meta[, .(name, IMSI)],
+                  by.x = "ID",
+                  by.y = "IMSI")
+
+write_fst(x = vrty_nfo,
+          path = "./data/vrty_info.fst")
+
+nfo_all <- fread(input = "./data/nfo_sensors.csv")
+nfo_all <- rbind(nfo_all[senzor != "vrt"], 
+                 data.table(ID = vrty_nfo$ID, senzor = "vrt"))
+
+write_fst(x = nfo_all, 
+          path = "./data/nfo_sensors.fst")
+
 vrty <- vrty[, .(ID, DTM, HLADINA, TEPLOTA)]
 
 setnames(x = vrty, 
@@ -242,5 +276,5 @@ dta_m <- melt(data = vrty,
 
 dta_m[, variable := tolower(x = variable)]
 
-write_fst(x = dta,
+write_fst(x = dta_m,
           path = "./data/vrty.fst")
