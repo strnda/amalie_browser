@@ -12,7 +12,7 @@ runtime: shiny
 ```{r phill, echo = FALSE, message=FALSE}
 shinyAppFile(appFile = "./R/filip/app.R",
              options = list(width = "100%",
-                            height = 1750))
+                            height = 1250))
 ```
 
 ## dHRUM - The Single HRU 
@@ -23,6 +23,13 @@ shinyAppFile(appFile = "./R/petr/app.R",
                             height = 1750))
 ```
 
+## KZ
+
+```{r KZ, echo = FALSE, message=FALSE}
+shinyAppFile(appFile = "./R/KZ/app.R",
+             options = list(width = "100%",
+                            height = 1250))
+```
 <!-- ## dHRUM - HRU jednotka -->
 
 <!-- ```{r eleni, echo = FALSE, message = FALSE, warning = FALSE} -->
