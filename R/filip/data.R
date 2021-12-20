@@ -73,10 +73,8 @@ dta[, date := as.IDate(x = date)]
 
 dta
 
-?fst
-
-write_fst(x = dta,
-          path = "./data/vlhkost.fst")
+# write_fst(x = dta,
+#           path = "./data/vlhkost.fst")
 
 ## dendro ####
 
@@ -99,8 +97,8 @@ dta <- dta_m[, .(value = mean(x = value,
 dta[, `:=`(ID = as.factor(ID),
            date = as.IDate(x = date))]
 
-write_fst(x = dta,
-          path = "./data/dendro.fst")
+# write_fst(x = dta,
+#           path = "./data/dendro.fst")
 
 ## mikroklima ####
 
@@ -147,8 +145,8 @@ dta[, date := as.IDate(x = date)]
 #              scales = "free") + 
 #   theme_bw()
 
-write_fst(x = dta,
-          path = "./data/mikroklima.fst")
+# write_fst(x = dta,
+#           path = "./data/mikroklima.fst")
 
 ## eddy ####
 
@@ -177,8 +175,8 @@ dta <- list(dta_m[(variable != "P"),
 dta <- rbindlist(l = dta)
 dta[, date := as.IDate(x = date)]
 
-write_fst(x = dta,
-          path = "./data/eddy.fst")
+# write_fst(x = dta,
+#           path = "./data/eddy.fst")
 
 ## vrty ####
 
@@ -221,8 +219,8 @@ dta[, `:=`(date = as.IDate(x = date),
 str(object = dta)
 dta
 
-write_fst(x = dta,
-          path = "./data/vlhkost_od_lukase.fst")
+# write_fst(x = dta,
+#           path = "./data/vlhkost_od_lukase.fst")
 
 ## vrty vosko ####
 
@@ -230,7 +228,7 @@ vrty <- dta_all[grep(pattern = "tms4",
                      x = ls, 
                      ignore.case = TRUE, 
                      invert = TRUE)][[1]]
-
+b
 vrty_nfo <- unique(x = vrty[, .(ID, x, y)])
 
 names(vrty_nfo) <- toupper(x = names(x = vrty_nfo))
@@ -255,8 +253,8 @@ vrty_nfo <- merge(x = vrty_nfo,
                   by.x = "ID",
                   by.y = "IMSI")
 
-write_fst(x = vrty_nfo,
-          path = "./data/vrty_info.fst")
+# write_fst(x = vrty_nfo,
+#           path = "./data/vrty_info.fst")
 
 nfo_all <- fread(input = "./data/nfo_sensors.csv")
 nfo_all <- rbind(nfo_all[senzor != "vrt"], 
@@ -276,5 +274,7 @@ dta_m <- melt(data = vrty,
 
 dta_m[, variable := tolower(x = variable)]
 
-write_fst(x = dta_m,
-          path = "./data/vrty.fst")
+# write_fst(x = dta_m,
+#           path = "./data/vrty.fst")
+
+
