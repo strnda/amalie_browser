@@ -4,6 +4,7 @@ library(sf)
 library(data.table)
 library(ggplot2)
 library(fst)
+library(DT)
 
 ui <- fluidPage(
   
@@ -22,12 +23,12 @@ ui <- fluidPage(
   fluidPage(
     column(width = 5,
            leafletOutput(outputId = 'map',
-                         height = 600),
-           tableOutput(outputId = "summary_table")),
+                         height = 500),
+           dataTableOutput(outputId = "summary_table")),
     column(width = 7,
            # textOutput(outputId = "click"),
            plotOutput(outputId = "plot",
-                      height = 900))
+                      height = 975))
   )
 )
 
@@ -165,7 +166,7 @@ server <- function(input, output, session) {
         
         dta_plot <- mikroklima_dta[ID == click$id,]
       }
-
+      
       if (sens_click == "eddy") {
         
         dta_plot <- eddy_dta[ID == click$id,]
@@ -188,11 +189,46 @@ server <- function(input, output, session) {
           theme_bw()
       })
       
-      output$summary_table <- renderTable({
-        
-        summary(dta_plot)
-      })
-
+      stat <- dta_plot[, .(`Průměr` = mean(x = value, 
+                                           na.rm = TRUE),
+                           `Sm. odchylka` = sd(x = value, 
+                                               na.rm = TRUE),
+                           `Koef. variace` = mean(x = value, 
+                                                  na.rm = TRUE) / sd(x = value, 
+                                                                     na.rm = TRUE),
+                           
+                           `Minimum` = min(x = value, 
+                                           na.rm = TRUE),
+                           `Maximum` = max(x = value, 
+                                           na.rm = TRUE),
+                           `1. kvartil` = quantile(x = value, 
+                                                   probs = .25, 
+                                                   na.rm = TRUE),
+                           `Medián` = quantile(x = value, 
+                                               probs = .5, 
+                                               na.rm = TRUE),
+                           `3. kvartil` = quantile(x = value, 
+                                                   probs = .75, 
+                                                   na.rm = TRUE),
+                           `Mezikvar. rozpětí` = IQR(x = value,
+                                                     na.rm = TRUE)),
+                       by = .(`Veličina` = variable)]
+      
+      stat_t <- as.data.frame(x = round(x = t(x = stat[, -1]),
+                                        digits = 2),
+                              keep.rownames = TRUE)
+      
+      names(x = stat_t) <- c(stat$`Veličina`)
+      
+      output$summary_table <- renderDataTable({
+        stat_t
+      },
+      options = list(scrollX = TRUE,
+                     paging = FALSE,
+                     bFilter = FALSE,
+                     bInfo = FALSE,
+                     # buttons = c('csv', 'excel'),
+                     server = FALSE))
     }
   })
 }
