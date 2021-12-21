@@ -279,9 +279,93 @@ dta_m[, variable := tolower(x = variable)]
 
 ## sucho #### 
 
-dta <- read_fst(path = "../../../Shared/appka_Fila/data/drought/BP_CTRL_Amalie.fst")
+dta_bp <- read_fst(path = "../../../Shared/appka_Fila/data/drought/BP_CTRL_Amalie.fst", 
+                   as.data.table = TRUE)
+dta_bp[, ID := paste("BP", HruIds,
+                     sep = "_")]
 
-head(diff(x = vrty$HLADINA))
-head(diff(x = vrty$HLOUBKA_HLADINY))
+dta_kl <- read_fst(path = "../../../Shared/appka_Fila/data/drought/KL_CTRL_Amalie.fst", 
+                   as.data.table = TRUE)
+dta_kl[, ID := paste("KL", HruIds,
+                     sep = "_")]
+
+dta_sucho <- rbind(dta_bp, dta_kl)
+dta_sucho <- dta_sucho[, .(ID, DTM, PREC, TOTR, PERC)]
+
+setnames(x = dta_sucho,
+         old = "DTM",
+         new = "date")
+
+names(x = dta_sucho)[3:5] <- tolower(x = names(x = dta_sucho)[3:5])
+
+dta_sucho_m <- melt(data = dta_sucho, 
+                    id.vars = c("ID", "date"))
 
 
+dta_p <- dta_sucho_m[variable == "prec", .(value = sum(x = value, 
+                                                       na.rm = TRUE)),
+                     by = .(ID, variable, date = format(x = date,
+                                                        format = "%Y-%m"))]
+
+
+dta_r <- dta_sucho_m[variable != "prec", .(value = mean(x = value, 
+                                                        na.rm = TRUE)),
+                     by = .(ID, variable, date = format(x = date,
+                                                        format = "%Y-%m"))]
+
+dta_sucho_month <- rbind(dta_p, dta_r)
+dta_sucho_month <- dta_sucho_month[, .(ID, date, variable, value)]
+dta_sucho_month[, `:=`(ID = as.factor(x = ID),
+                       date = as.IDate(x = paste0(date, "-01")))]
+
+dta_sucho_month[variable == "totr" & value == 0, value := .01]
+dta_sucho_month[variable == "perc" & value == 0, value := .01]
+
+ggplot(data = dta_sucho_month[ID == "BP_1"]) +
+  geom_line(mapping = aes(x = date,
+                          y = value)) +
+  geom_hline(mapping = aes(yintercept = q),
+             colour = "red4") +
+  facet_wrap(facets = ~variable, 
+             scales = "free", 
+             ncol =1)
+
+# library(CoSMoS)
+# 
+# para <- dta_sucho_month[, .(unlist(fitDist(data = value, 
+#                                            dist = "ggamma", 
+#                                            n.points = 30, 
+#                                            norm = "N2", 
+#                                            constrain = FALSE))),
+#                         by = .(ID, variable)]
+# 
+# para[, para := rep(x = c("scale", "shape1", "shape2"),
+#                    times = .N / 3)]
+# 
+# para <- dcast(data = para,
+#               formula = ID + variable ~ para,
+#               value.var = "V1")
+# 
+# write_fst(x = para,
+#           path = "./data/sucho_para.fst")
+
+para <- read_fst(path = "./data/sucho_para.fst")
+
+dta_sucho <- merge(x = dta_sucho_month, 
+                   y = para, 
+                   by = c("ID", "variable"))
+
+dta_sucho[, index := qnorm(p = pggamma(q = value,
+                                       scale = scale,
+                                       shape1 = shape1,
+                                       shape2 = shape2))]
+
+dta_sucho[index < -3.5, index := rnorm(n = .N,
+                                       mean = -2.5, 
+                                       sd = .3)]
+
+levels(x = dta_sucho$variable) <- c("SPI", "SRI", "SSI")
+
+
+write_fst(x = dta_sucho,
+          path = "./data/indexy_sucha.fst")

@@ -13,9 +13,10 @@ ui <- fluidPage(
   fluidPage(
     column(width = 5,
            leafletOutput(outputId = 'map',
-                         height = 500)),
+                         height = 500),
+           dataTableOutput(outputId = "summary_table")),
     column(width = 7,
-           textOutput(outputId = "click"),
+           # textOutput(outputId = "click"),
            plotOutput(outputId = "plot",
                       height = 600))
   )
@@ -28,6 +29,9 @@ server <- function(input, output, session) {
   hru$layer_ID <- paste(hru$ID, 
                         as.character(x = hru$OBJECTID),
                         sep = "_")
+  
+  sucho_dta <- read_fst(path = "./data/indexy_sucha.fst", 
+                        as.data.table = TRUE)
 
   output$map <- renderLeaflet({
     
@@ -74,27 +78,68 @@ server <- function(input, output, session) {
       return()
     } else {
       
-      output$click <- renderPrint({
-
-        print(list(X = click$id))
-
-      })
+      # output$click <- renderPrint({
+      # 
+      #   print(list(X = click$id))
+      # 
+      # })
+      
+      dta_plot <- sucho_dta[ID == click$id,]
       
       output$plot <- renderPlot({
         
-        df <- data.frame(
-          gp = factor(rep(letters[1:3], each = 10)),
-          y = rnorm(30)
-        )
-        ds <- do.call(rbind, lapply(split(df, df$gp), function(d) {
-          data.frame(mean = mean(d$y), sd = sd(d$y), gp = d$gp)
-        }))
-
-        ggplot(df, aes(gp, y)) +
-          geom_point() +
-          geom_point(data = ds, aes(y = mean), colour = 'red', size = 3)
+        ggplot(data = dta_plot) +
+          geom_col(mapping = aes(x = date,
+                                 y = index,
+                                 colour = ifelse(test = index > 0, 
+                                                 yes = 'mokro',
+                                                 no = 'sucho')),
+                   show.legend = FALSE) +
+          scale_colour_manual(values = c("steelblue4", "red3")) +
+          geom_hline(yintercept = 0, 
+                     colour = "red4", 
+                     linetype = 2) + 
+          facet_wrap(facets = ~variable, 
+                     scales = "free", 
+                     ncol = 1) +
+          theme_bw() +
+          labs(x = "Čas", 
+               y = "Hodnota indexu")
       })
+      stat <- dta_plot[, .(`Průměr` = mean(x = index, 
+                                           na.rm = TRUE),
+                           `Minimum` = min(x = index, 
+                                           na.rm = TRUE),
+                           `Maximum` = max(x = index, 
+                                           na.rm = TRUE),
+                           `1. kvartil` = quantile(x = index, 
+                                                   probs = .25, 
+                                                   na.rm = TRUE),
+                           `Medián` = quantile(x = index, 
+                                               probs = .5, 
+                                               na.rm = TRUE),
+                           `3. kvartil` = quantile(x = index, 
+                                                   probs = .75, 
+                                                   na.rm = TRUE),
+                           `Mezikvar. rozpětí` = IQR(x = index,
+                                                     na.rm = TRUE)),
+                       by = .(`Veličina` = variable)]
       
+      stat_t <- as.data.frame(x = round(x = t(x = stat[, -1]),
+                                        digits = 2),
+                              keep.rownames = TRUE)
+      
+      names(x = stat_t) <- c(stat$`Veličina`)
+      
+      output$summary_table <- renderDataTable({
+        stat_t
+      },
+      options = list(scrollX = TRUE,
+                     paging = FALSE,
+                     bFilter = FALSE,
+                     bInfo = FALSE,
+                     # buttons = c('csv', 'excel'),
+                     server = FALSE))
     }
   })
 }
