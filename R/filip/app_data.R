@@ -64,7 +64,7 @@ server <- function(input, output, session) {
   
   dendro_dta <- read_fst(path = "./data/dendro.fst", 
                          as.data.table = TRUE)
-  levels(x = dendro_dta$variable) <- c("Teplota [°C]", "Radius [mm]")
+  levels(x = dendro_dta$variable) <- c("Teplota [°C]", "Radius [mm * 0.001]")
   
   mikroklima_dta <- read_fst(path = "./data/mikroklima.fst",
                              as.data.table = TRUE)
