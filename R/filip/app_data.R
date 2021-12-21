@@ -209,6 +209,8 @@ server <- function(input, output, session) {
           facet_wrap(facets = ~variable,
                      scales = "free", 
                      ncol = 1) +
+          labs(x = "Čas", 
+               y = "Hodnota") +
           theme_bw()
       })
       
