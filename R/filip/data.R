@@ -228,7 +228,7 @@ vrty <- dta_all[grep(pattern = "tms4",
                      x = ls, 
                      ignore.case = TRUE, 
                      invert = TRUE)][[1]]
-b
+
 vrty_nfo <- unique(x = vrty[, .(ID, x, y)])
 
 names(vrty_nfo) <- toupper(x = names(x = vrty_nfo))
@@ -260,8 +260,8 @@ nfo_all <- fread(input = "./data/nfo_sensors.csv")
 nfo_all <- rbind(nfo_all[senzor != "vrt"], 
                  data.table(ID = vrty_nfo$ID, senzor = "vrt"))
 
-write_fst(x = nfo_all, 
-          path = "./data/nfo_sensors.fst")
+# write_fst(x = nfo_all, 
+#           path = "./data/nfo_sensors.fst")
 
 vrty <- vrty[, .(ID, DTM, HLADINA, TEPLOTA)]
 
@@ -276,5 +276,12 @@ dta_m[, variable := tolower(x = variable)]
 
 # write_fst(x = dta_m,
 #           path = "./data/vrty.fst")
+
+## sucho #### 
+
+dta <- read_fst(path = "../../../Shared/appka_Fila/data/drought/BP_CTRL_Amalie.fst")
+
+head(diff(x = vrty$HLADINA))
+head(diff(x = vrty$HLOUBKA_HLADINY))
 
 
