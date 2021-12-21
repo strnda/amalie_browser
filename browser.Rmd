@@ -9,8 +9,8 @@ runtime: shiny
 # {.tabset}
 ## Prohlížečka dat
 
-```{r phill, echo = FALSE, message=FALSE}
-shinyAppFile(appFile = "./R/filip/app.R",
+```{r phill, echo = FALSE, message = FALSE}
+shinyAppFile(appFile = "./R/filip/app_data.R",
              options = list(width = "100%",
                             height = 1250))
 ```
@@ -23,10 +23,18 @@ shinyAppFile(appFile = "./R/petr/app.R",
                             height = 1750))
 ```
 
+## Sucho
+
+```{r sucho, echo = FALSE, message = FALSE}
+shinyAppFile(appFile = "./R/sucho/app_sucho.R",
+             options = list(width = "100%",
+                            height = 1250))
+```
+
 ## KZ
 
-```{r KZ, echo = FALSE, message=FALSE}
-shinyAppFile(appFile = "./R/KZ/app.R",
+```{r KZ, echo = FALSE, message = FALSE}
+shinyAppFile(appFile = "./R/KZ/app_kz.R",
              options = list(width = "100%",
                             height = 1250))
 ```
