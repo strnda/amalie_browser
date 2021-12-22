@@ -32,6 +32,10 @@ server <- function(input, output, session) {
   
   sucho_dta <- read_fst(path = "./data/indexy_sucha.fst", 
                         as.data.table = TRUE)
+  
+  levels(x = sucho_dta$variable) <- c("SPI - Meteorologické sucho", 
+                                      "SRI - Hydrologické sucho", 
+                                      "SSI - Půdní sucho")
 
   output$map <- renderLeaflet({
     
@@ -97,8 +101,11 @@ server <- function(input, output, session) {
                    show.legend = FALSE) +
           scale_colour_manual(values = c("steelblue4", "red3")) +
           geom_hline(yintercept = 0, 
-                     colour = "red4", 
+                     colour = "black", 
                      linetype = 2) + 
+          geom_hline(yintercept = c(-2, 2), 
+                     colour = "grey25", 
+                     linetype = 3) + 
           facet_wrap(facets = ~variable, 
                      scales = "free", 
                      ncol = 1) +
