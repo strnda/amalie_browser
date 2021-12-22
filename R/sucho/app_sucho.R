@@ -35,6 +35,7 @@ server <- function(input, output, session) {
   
   levels(x = sucho_dta$variable) <- c("SPI - Meteorologické sucho", 
                                       "SRI - Hydrologické sucho", 
+                                      "SGI - Nedostatek podzemních vod",
                                       "SSI - Půdní sucho")
 
   output$map <- renderLeaflet({

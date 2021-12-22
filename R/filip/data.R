@@ -1,4 +1,4 @@
-library(data.table); library(fst); library(sf)
+library(data.table); library(fst); library(sf); library(ggplot2)
 
 ## tomst vlhkost ####
 
@@ -290,18 +290,16 @@ dta_kl[, ID := paste("KL", HruIds,
                      sep = "_")]
 
 dta_sucho <- rbind(dta_bp, dta_kl)
-dta_sucho <- dta_sucho[, .(ID, DTM, PREC, TOTR, PERC)]
+dta_sucho <- dta_sucho[, .(ID, DTM, PREC, TOTR, PERC, GROS)]
 
 setnames(x = dta_sucho,
          old = "DTM",
          new = "date")
 
-names(x = dta_sucho)[3:5] <- tolower(x = names(x = dta_sucho)[3:5])
-
 dta_sucho_m <- melt(data = dta_sucho, 
                     id.vars = c("ID", "date"))
 
-
+dta_sucho_m[, variable := tolower(x = variable)]
 dta_p <- dta_sucho_m[variable == "prec", .(value = sum(x = value, 
                                                        na.rm = TRUE)),
                      by = .(ID, variable, date = format(x = date,
@@ -318,8 +316,11 @@ dta_sucho_month <- dta_sucho_month[, .(ID, date, variable, value)]
 dta_sucho_month[, `:=`(ID = as.factor(x = ID),
                        date = as.IDate(x = paste0(date, "-01")))]
 
+unique(dta_sucho_month$variable)
+
 dta_sucho_month[variable == "totr" & value == 0, value := .01]
 dta_sucho_month[variable == "perc" & value == 0, value := .01]
+dta_sucho_month[variable == "gros" & value == 0, value := .01]
 
 ggplot(data = dta_sucho_month[ID == "BP_1"]) +
   geom_line(mapping = aes(x = date,
@@ -328,7 +329,7 @@ ggplot(data = dta_sucho_month[ID == "BP_1"]) +
              scales = "free", 
              ncol = 1)
 
-# x <- dta_sucho_month[ID == "BP_1" & variable == "totr", value]
+# x <- dta_sucho_month[ID == "BP_1" & variable == "gros", value]
 # 
 # library(CoSMoS)
 # ?fitDist
@@ -349,10 +350,10 @@ ggplot(data = dta_sucho_month[ID == "BP_1"]) +
 # 
 # library(CoSMoS)
 # 
-# para <- dta_sucho_month[, .(unlist(fitDist(data = value, 
-#                                            dist = "ggamma", 
-#                                            n.points = 30, 
-#                                            norm = "N2", 
+# para <- dta_sucho_month[, .(unlist(fitDist(data = value,
+#                                            dist = "ggamma",
+#                                            n.points = 30,
+#                                            norm = "N2",
 #                                            constrain = FALSE))),
 #                         by = .(ID, variable)]
 # 
@@ -372,6 +373,8 @@ dta_sucho <- merge(x = dta_sucho_month,
                    y = para, 
                    by = c("ID", "variable"))
 
+unique(x = dta_sucho$variable)
+
 dta_sucho[, index := qnorm(p = pggamma(q = value,
                                        scale = scale,
                                        shape1 = shape1,
@@ -381,11 +384,13 @@ dta_sucho[index < -3.5, index := rnorm(n = .N,
                                        mean = -2.5, 
                                        sd = .3)]
 
-levels(x = dta_sucho$variable) <- c("SPI", "SRI", "SSI")
+dta_sucho[, variable := as.factor(x = variable)]
+levels(x = dta_sucho$variable) <- c("SGI", "SSI", "SPI", "SRI")
 
-
-# write_fst(x = dta_sucho,
-#           path = "./data/indexy_sucha.fst")
+dta_sucho[, variable := ordered(x = variable,
+                                levels = c("SPI", "SRI", "SGI", "SSI"))]
+write_fst(x = dta_sucho,
+          path = "./data/indexy_sucha.fst")
 
 ## KZ ####
 dta_kz <- read_fst(path = "./data_raw/zmeny-clust.fst",
