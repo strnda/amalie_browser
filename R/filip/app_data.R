@@ -59,6 +59,7 @@ server <- function(input, output, session) {
   vrty_dta[, `:=`(ID = as.factor(x = ID),
                   variable = as.factor(x = variable))]
   levels(x = vrty_dta$variable) <- c("Hladina vody [mm]", "Teplota [°C]")
+  vrty_dta[, variable := as.character(x = variable)]
   
   vlhkost_dta <- read_fst(path = "./data/vlhkost_od_lukase.fst", 
                           as.data.table = TRUE)
@@ -66,10 +67,12 @@ server <- function(input, output, session) {
   vlhkost_dta[, variable := as.factor(x = variable)]
   levels(x = vlhkost_dta$variable) <- c("Teplota - 1 [°C]", "Teplota - 2 [°C]",
                                         "Teplota - 3 [°C]", "Vlhkost [%]")
+  vlhkost_dta[, variable := as.character(x = variable)]
   
   dendro_dta <- read_fst(path = "./data/dendro.fst", 
                          as.data.table = TRUE)
   levels(x = dendro_dta$variable) <- c("Teplota [°C]", "Radius [mm * 0.001]")
+  dendro_dta[, variable := as.character(x = variable)]
   
   mikroklima_dta <- read_fst(path = "./data/mikroklima.fst",
                              as.data.table = TRUE)
@@ -77,10 +80,12 @@ server <- function(input, output, session) {
   levels(x = mikroklima_dta$variable) <- c("Vlhkost [%]", "Ovlhčení listů [-]",
                                            "Srážka [mm]", "Teplota [°C]",
                                            "Náraz větru [m/s]", "Rychlost větru [m/s]")
+  mikroklima_dta[, variable := as.character(x = variable)]
   
   eddy_dta <- read_fst(path = "./data/eddy.fst", 
                        as.data.table = TRUE)
   levels(x = eddy_dta$variable) <- c("Srážka [mm]", "Teplota [°C]")
+  eddy_dta[, variable := as.character(x = variable)]
   
   output$map <- renderLeaflet({
     
