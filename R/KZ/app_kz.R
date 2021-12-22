@@ -110,6 +110,10 @@ server <- function(input, output, session) {
           facet_wrap(facets = ~variable, 
                      scales = "free", 
                      ncol = 3) +
+          geom_hline(yintercept = 1,
+                     colour = "black",
+                     linetype = 2, 
+                     alpha = .75) +
           theme_bw() +
           labs(x = "Týden",
                y = "Relativní změna",
