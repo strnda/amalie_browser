@@ -1,4 +1,4 @@
-library(hydroGOF)
+# library(hydroGOF)
 library(data.table)
 library(dplyr)
 
@@ -31,6 +31,29 @@ annual_mean_BP <- function(outSimulation) {
   #plot(Annualmean$meanTOTR, type = "l")
   out
 }
+
+KGE <- function(obs,sim){
+  
+  r=cor(obs,sim)
+  sdfr= sd(sim) / sd(obs)
+  mufr = mean(sim) / mean(obs)
+  
+  return( 1-((r-1)^2 + (sdfr-1)^2+ (mufr-1)^2)^0.5)
+}
+
+NSE <- function(obs,sim){
+  
+  ff=sum((obs-sim)^2)
+  fo=sum((obs-mean(obs))^2)
+  
+  return( 1-ff/fo)
+}
+
+mae <- function(obs, sim){
+  
+  return(mean(abs(sim-obs)))
+}
+
 
 calculation_BP <- function(out, obs) {
   #Input <- readRDS("./data/BP_benchmark_LUMPED.rds")
