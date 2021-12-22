@@ -1,8 +1,8 @@
 library(shiny)
 library(shinythemes)
 library(lubridate)
-library(dygraphs)
-library(plotly)
+# library(dygraphs)
+# library(plotly)
 
 # ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))), 
 #                  windowTitle = "dHrum",

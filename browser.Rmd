@@ -15,9 +15,9 @@ shinyAppFile(appFile = "./R/filip/app_data.R",
                             height = 1250))
 ```
 
-## dHRUM - The Single HRU 
+## dHRUM - The Single HRU
 
-```{r petr, echo = FALSE, message = FALSE, warning = FALSE, cache=FALSE}
+```{r petr}
 shinyAppFile(appFile = "./R/petr/app.R",
              options = list(width = "100%",
                             height = 1750))
@@ -38,9 +38,10 @@ shinyAppFile(appFile = "./R/KZ/app_kz.R",
              options = list(width = "100%",
                             height = 950))
 ```
+
 <!-- ## dHRUM - HRU jednotka -->
 
-<!-- ```{r eleni, echo = FALSE, message = FALSE, warning = FALSE} -->
+<!-- ```{r eleni} -->
 <!-- shinyAppFile(appFile = "./R/eleni/app.R", -->
 <!--              options = list(width = "100%", -->
 <!--                             height = 1000)) -->
