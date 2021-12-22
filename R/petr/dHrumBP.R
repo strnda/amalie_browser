@@ -21,16 +21,16 @@ annual_mean_EVA_BP <- function(outSimulation, mean_BP) {
   out
 }
 
-annual_mean_BP <- function(outSimulation) {
-  # Annual Total runoff
-  outSimDT <- as.data.table(outSimulation)
-  Annualmean <-
-    outSimDT[, ':=' (MONTH = month(DTM), YEAR = year(DTM))][, .(meanTOTR =
-                                                                  mean(TOTR)), by = .(MONTH, YEAR)]
-  out = Annualmean[, DTA := as.yearmon(paste(YEAR, MONTH), "%Y %m")][, ':='(YEAR = NULL, MONTH = NULL)]
-  #plot(Annualmean$meanTOTR, type = "l")
-  out
-}
+# annual_mean_BP <- function(outSimulation) {
+#   # Annual Total runoff
+#   outSimDT <- as.data.table(outSimulation)
+#   Annualmean <-
+#     outSimDT[, ':=' (MONTH = month(DTM), YEAR = year(DTM))][, .(meanTOTR =
+#                                                                   mean(TOTR)), by = .(MONTH, YEAR)]
+#   out = Annualmean[, DTA := as.yearmon(paste(YEAR, MONTH), "%Y %m")][, ':='(YEAR = NULL, MONTH = NULL)]
+#   #plot(Annualmean$meanTOTR, type = "l")
+#   out
+# }
 
 KGE <- function(obs,sim){
   

@@ -1,8 +1,8 @@
 library(shiny)
 library(shinythemes)
 library(lubridate)
-library(dygraphs)
-library(plotly)
+# library(dygraphs)
+# library(plotly)
 
 # ui <- navbarPage(div(a(img(src = "./www/fzp_en.png", height = 350 / 9))), 
 #                  windowTitle = "dHrum",
@@ -11,10 +11,12 @@ library(plotly)
 #                  windowTitle = "dHrum",
 #                  tabPanel("",
 
- ui<-                 fluidPage(theme = bslib::bs_theme(bootswatch = "pulse"),
-                          tags$head(
-                            tags$link(rel = "stylesheet", type = "text/css", href = "./www/custom.css")
-                          ),
+ ui<-                 fluidPage( title = 'shiny',
+   # theme = bslib::bs_theme(bootswatch = "pulse")
+   # ,
+                          # tags$head(
+                          #   tags$link(rel = "stylesheet", type = "text/css", href = "./www/custom.css")
+                          # ),
                           sidebarLayout(position = "left",
                                         sidebarPanel(width = 3,
                                                      h4("Choose a basin:"),
@@ -31,7 +33,7 @@ library(plotly)
                                                            sliderInput("ks", "KS:", min = 0, max = 1, value = 0.001, step = 0.001),
                                                            sliderInput("kf", "KF:", min = 0, max = 1, value = 0.3, step = 0.01),
                                                            sliderInput("adiv", "ADIV:", min = 0, max = 1, value = 0.4, step = 0.01),
-                                                           style = "height: 550px;",
+                                                           # style = "height: 550px;",
                                                          ),
                                                          tabPanel(
                                                            "Vegetation" ,
@@ -42,7 +44,7 @@ library(plotly)
                                                            sliderInput("cdiv", "CDIV:", min = 0, max = 0.5, value = 0.3, step = 0.01),
                                                            sliderInput("sdiv", "SDIV:", min = 0, max = 0.2, value = 0.05, step = 0.01),
                                                            sliderInput("csdiv", "CSDIV:", min = 0, max = 1, value = 0.08, step = 0.01),
-                                                           style = "height: 550px;"
+                                                           # style = "height: 550px;"
                                                          ),
                                                          
                                                          tabPanel(
@@ -55,7 +57,7 @@ library(plotly)
                                                            sliderInput("c_min", "C_MIN:", min = 0, max = 20, value = 10, step = 0.1),
                                                            sliderInput("retcap", "RETCAP:", min = 0, max = 20, value = 2, step = 0.1),
                                                            textOutput("smax"),
-                                                           style = "height: 550px;"
+                                                           # style = "height: 550px;"
                                                          ),
                                                          tabPanel(
                                                            "Snow",
@@ -64,10 +66,10 @@ library(plotly)
                                                            sliderInput("ddfa", "DDFA:", min = 0, max = 10, value = 5, step = 0.1),
                                                            sliderInput("tetr", "TETR:", min = -0.5, max = 4.5, value = 0, step = 0.1),
                                                            sliderInput("tmel", "TMEL:", min = -3, max = 1, value = 0.0, step = 0.1),
-                                                           style = "height: 550px;"
+                                                           # style = "height: 550px;"
                                                          )
                                                        ),
-                                                       style = "padding-left: 10px;",
+                                                       # style = "padding-left: 10px;",
                                                        actionButton("runDhrum", "Run dHRUM", class = "btn btn-primary"),
                                                        
                                                      )

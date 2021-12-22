@@ -1,17 +1,18 @@
 library(data.table)
-library(RcppDE)
+# library(RcppDE)
 library(dHRUM)
-library(dygraphs)
+# library(dygraphs)
 library(dplyr)
 library(ggplot2)
-library(plotly)
+# library(plotly)
 library(gridExtra)
 
 
-source("./dHrumBP.R")
-source("./dHrumKL.R")
-
 server <- function(input, output) {
+  
+  source("./R/petr/dHrumBP.R")
+  source("./R/petr/dHrumKL.R")
+  
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
     data.frame(
@@ -108,7 +109,7 @@ server <- function(input, output) {
                                  as.character(as.Date(min(input$date_range[1L]))), 
                                  as.character(as.Date(max(input$date_range[2L]))))
       outDta$statistics <- calculation_BP(outDta$data, outDta$data$outObs)
-      outDta$annualMean <- annual_mean_BP(outDta$data$dta)
+      # outDta$annualMean <- annual_mean_BP(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
       outDta$FDC = FlowDurationCurveBP(outDta$data)
       
@@ -122,7 +123,7 @@ server <- function(input, output) {
                                  as.character(as.Date(min(input$date_range[1L]))), 
                                  as.character(as.Date(max(input$date_range[2L]))))
       outDta$statistics <- calculation_KL(outDta$data, outDta$data$outObs)
-      outDta$annualMean <- annual_mean_KL(outDta$data$dta)
+      # outDta$annualMean <- annual_mean_KL(outDta$data$dta)
       outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
       outDta$FDC = FlowDurationCurveKL(outDta$data)
     }
@@ -170,20 +171,19 @@ server <- function(input, output) {
     return(qp)
       })
   
-  output$plotHydrograph <- renderPlotly({
-    
-    if (is.null(outDta$data)) return()
-    
-    plot <- ggplot(outDta$data$dta, aes(x=DTM)) + 
-      geom_line(aes(y = TOTR), color = "#FA9335") + 
-      geom_line(aes(y = BASF), color = "#0088D2") +
-      labs(y="Q [mm/day]", x = "Date")
-    ggplotly(plot)
-    
-    
-    
-  })
-  
+  # output$plotHydrograph <- renderPlotly({
+  #   
+  #   if (is.null(outDta$data)) return()
+  #   
+  #   plot <- ggplot(outDta$data$dta, aes(x=DTM)) + 
+  #     geom_line(aes(y = TOTR), color = "#FA9335") + 
+  #     geom_line(aes(y = BASF), color = "#0088D2") +
+  #     labs(y="Q [mm/day]", x = "Date")
+  #   ggplotly(plot)
+  #   
+  #   
+  # })
+  # 
   output$plotAnnualMean <- renderPlot({
     if (is.null(outDta$data)) return()
     
@@ -193,19 +193,19 @@ server <- function(input, output) {
     
   })
   
-  output$plotAnnualMeanEVA <- renderPlotly({
-    if (is.null(outDta$annualMeanEVA)) return()
-    
-    plot <- ggplot(outDta$annualMeanEVA, aes(x = DTA)) +
-      geom_line(aes(y = meanEVBS), color = "#B77252") +
-      geom_line(aes(y = meanEVAC), color = "#939B66") +
-      geom_line(aes(y = meanEVAS), color = "#838BC2") +
-      geom_line(aes(y = meanAET), color = "#F8CF2C") +
-      labs(y="Depth [mm/day]", x = "Date")
-    ggplotly(plot)
-    
-    
-  })
+  # output$plotAnnualMeanEVA <- renderPlotly({
+  #   if (is.null(outDta$annualMeanEVA)) return()
+  #   
+  #   plot <- ggplot(outDta$annualMeanEVA, aes(x = DTA)) +
+  #     geom_line(aes(y = meanEVBS), color = "#B77252") +
+  #     geom_line(aes(y = meanEVAC), color = "#939B66") +
+  #     geom_line(aes(y = meanEVAS), color = "#838BC2") +
+  #     geom_line(aes(y = meanAET), color = "#F8CF2C") +
+  #     labs(y="Depth [mm/day]", x = "Date")
+  #   ggplotly(plot)
+  #   
+  #   
+  # })
   
   output$plotPQ <- renderPlot({
     if (is.null(outDta$data)) return()
