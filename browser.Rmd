@@ -36,7 +36,7 @@ shinyAppFile(appFile = "./R/sucho/app_sucho.R",
 ```{r KZ, echo = FALSE, message = FALSE}
 shinyAppFile(appFile = "./R/KZ/app_kz.R",
              options = list(width = "100%",
-                            height = 1750))
+                            height = 950))
 ```
 <!-- ## dHRUM - HRU jednotka -->
 
