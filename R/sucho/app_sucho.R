@@ -18,7 +18,7 @@ ui <- fluidPage(
     column(width = 7,
            # textOutput(outputId = "click"),
            plotOutput(outputId = "plot",
-                      height = 600))
+                      height = 800))
   )
 )
 
