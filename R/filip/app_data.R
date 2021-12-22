@@ -36,6 +36,11 @@ server <- function(input, output, session) {
   
   hru <- st_read(dsn = "./data/hru_info.shp", 
                  quiet = TRUE)
+  kl <- st_read(dsn = "./data/kl.shp", 
+                quiet = TRUE)
+  bp <- st_read(dsn = "./data/bp.shp", 
+                quiet = TRUE)
+  
   tmst <- fread(input = "./data/soil_moisture_sensor_info.csv")
   dendro <- fread(input = "./data/dendrometer_info.csv")
   # vrty <- fread(input = "./data/vrty_info.csv")
@@ -144,15 +149,40 @@ server <- function(input, output, session) {
                     weight = 2.5,
                     fillOpacity = 0.69),
                   group = "Polygony hydr. jednotek") %>%
+      addPolygons(data = bp,
+                  label = "Brejlský potok",
+                  # popup = "Brejlský potok",
+                  fillColor = "#808080",
+                  color = "#808080",
+                  weight = 1.75,
+                  highlight = highlightOptions(
+                    weight = 2.5,
+                    fillOpacity = 0.69),
+                  group = "Povodí Brejlského potoka") %>%
+      addPolygons(data = kl,
+                  label = "Karlův luh",
+                  # popup = "Brejlský potok",
+                  fillColor = "#808080",
+                  color = "#808080",
+                  weight = 1.75,
+                  highlight = highlightOptions(
+                    weight = 2.5,
+                    fillOpacity = 0.69),
+                  group = "Povodí Karlova luhu") %>%
       addLayersControl(baseGroups = c("Podkladová mapa", 
                                       "Ortofoto"),
-                       overlayGroups = c("Polygony hydr. jednotek", 
+                       overlayGroups = c("Polygony hydr. jednotek",
+                                         "Povodí Brejlského potoka",
+                                         "Povodí Karlova luhu",
                                          "Vrty",
                                          "Vlhkostní senzory",
                                          "Dendrometry",
                                          "Mikroklima",
                                          'Stanice "Lihovar"'),
-                       options = layersControlOptions(collapsed = TRUE))
+                       options = layersControlOptions(collapsed = TRUE)) %>%
+      hideGroup("Polygony hydr. jednotek")
+    
+    
   })
   
   observe({

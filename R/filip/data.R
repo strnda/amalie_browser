@@ -1,4 +1,4 @@
-library(data.table); library(fst)
+library(data.table); library(fst); library(sf)
 
 ## tomst vlhkost ####
 
@@ -418,4 +418,18 @@ levels(dta_kz$variable) <- paste("Změna",
 write_fst(x = dta_kz,
           path = "./data/kz.fst")
 
+## povodi ####
 
+bp <- st_read(dsn = "~/ownCloud/Shared/Amalie/Data/gis/GIS_podklady/SHP_povodi/Brejlsky_potok.shp", 
+              quiet = TRUE)
+bp <- st_transform(x = bp,
+                   crs = 4326)
+st_write(obj = bp, 
+         dsn = "./data/bp.shp")
+
+kl <- st_read(dsn = "~/ownCloud/Shared/Amalie/Data/gis/GIS_podklady/SHP_povodi/Karluv_luh.shp", 
+              quiet = TRUE)
+kl <- st_transform(x = kl,
+                   crs = 4326)
+st_write(obj = kl, 
+         dsn = "./data/kl.shp")
