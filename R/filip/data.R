@@ -333,13 +333,17 @@ ggplot(data = dta_sucho_month[ID == "BP_1"]) +
 # library(CoSMoS)
 # ?fitDist
 # 
-# y <- fitDist(data = x, 
-#              dist = "ggamma", 
-#              n.points = 30, 
+# y <- fitDist(data = x,
+#              dist = "ggamma",
+#              n.points = 30,
 #              norm = 'N2',
 #              constrain = FALSE)
 # 
 # p <- plot(x = y) + theme_bw()
+# p
+# ggsave(filename = "~/Desktop/fit_plot.png",
+#        width = 9,
+#        height = 4)
 # saveRDS(object = p,
 #         file = "~/Desktop/fit_plot.rds")
 # 
@@ -396,7 +400,20 @@ dta_kz[, `:=`(ID = as.factor(x = paste(ID, HruIds,
               cl = as.factor(x = cl),
               dT = as.numeric(x = as.character(x = dT)) / 100)]
 
-dta_kz <- dta_kz[variable != "dTOTR" & variable != "dPREC" & variable != "dTEMP",]
+dta_kz <- dta_kz[grep(pattern = "rat",
+                      x = variable, 
+                      ignore.case = TRUE),]
+
+dta_kz[, variable := droplevels(x = variable)]
+dta_kz[, variable := ordered(x = variable,
+                             levels = c("rat_PREC", "rat_PET", "rat_AET", "rat_TOTR", 
+                                        "rat_BASF", "rat_SURS", "rat_DIRR", "rat_SOIS", "rat_GROS"))]
+dta_kz <- dta_kz[variable != "rat_GROS",]
+dta_kz[, variable := droplevels(x = variable)]
+levels(dta_kz$variable) <- paste("Změna", 
+                                 c("srážek", "potenciální evaporanspirace", "aktuální evapotranspirace",
+                                   "celkového odtoku", "základního odtoku", "přímého odtoku",
+                                   "povrchové retence", "zásoby vody v půdě"))
 
 write_fst(x = dta_kz,
           path = "./data/kz.fst")

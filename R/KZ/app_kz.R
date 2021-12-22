@@ -13,18 +13,18 @@ ui <- fluidPage(
   fluidPage(
     column(width = 4,
            leafletOutput(outputId = 'map',
-                         height = 400)),
+                         height = 500)),
     column(width = 8,
            align = "center",
+           plotOutput(outputId = "plot",
+                      height = 550),
            sliderInput(inputId = "temp",
                        label = "Nárůst teploty [°C]:",
                        min = .5,
                        max = 5,
                        step = .5,
                        value = .5, 
-                       width = "500px"),
-           plotOutput(outputId = "plot",
-                      height = 1000))
+                       width = "500px"))
   )
 )
 
@@ -110,7 +110,12 @@ server <- function(input, output, session) {
           facet_wrap(facets = ~variable, 
                      scales = "free", 
                      ncol = 3) +
-          theme_bw()
+          theme_bw() +
+          labs(x = "Týden",
+               y = "Relativní změna",
+               title = paste0("Relativní změny hodnot veličin při nárůstu teploty o ",
+                              input$temp, " [°C]")) +
+          theme(plot.title = element_text(hjust = 0.5))
       })
     }
   })
