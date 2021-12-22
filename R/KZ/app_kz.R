@@ -11,13 +11,20 @@ ui <- fluidPage(
   title = 'shiny',
   
   fluidPage(
-    column(width = 5,
+    column(width = 4,
            leafletOutput(outputId = 'map',
-                         height = 500)),
-    column(width = 7,
-           textOutput(outputId = "click"),
+                         height = 400)),
+    column(width = 8,
+           align = "center",
+           sliderInput(inputId = "temp",
+                       label = "Nárůst teploty [°C]:",
+                       min = .5,
+                       max = 5,
+                       step = .5,
+                       value = .5, 
+                       width = "500px"),
            plotOutput(outputId = "plot",
-                      height = 600))
+                      height = 1000))
   )
 )
 
@@ -28,7 +35,10 @@ server <- function(input, output, session) {
   hru$layer_ID <- paste(hru$ID, 
                         as.character(x = hru$OBJECTID),
                         sep = "_")
-
+  
+  dta_kz <- read_fst(path = "./data/kz.fst",
+                     as.data.table = TRUE)
+  
   output$map <- renderLeaflet({
     
     leaflet() %>% 
@@ -74,27 +84,34 @@ server <- function(input, output, session) {
       return()
     } else {
       
-      output$click <- renderPrint({
-
-        print(list(X = click$id))
-
-      })
+      # output$click <- renderPrint({
+      #   
+      #   print(list(X = click$id))
+      #   
+      # })
+      
+      
       
       output$plot <- renderPlot({
         
-        df <- data.frame(
-          gp = factor(rep(letters[1:3], each = 10)),
-          y = rnorm(30)
-        )
-        ds <- do.call(rbind, lapply(split(df, df$gp), function(d) {
-          data.frame(mean = mean(d$y), sd = sd(d$y), gp = d$gp)
-        }))
-
-        ggplot(df, aes(gp, y)) +
-          geom_point() +
-          geom_point(data = ds, aes(y = mean), colour = 'red', size = 3)
+        dta_plot <- dta_kz[ID == click$id & dT == input$temp, ]
+        
+        ggplot(data = dta_plot) +
+          geom_line(mapping = aes(x = block,
+                                  y = Q50,
+                                  colour = cl),
+                    show.legend = FALSE) +
+          geom_ribbon(mapping = aes(x = block,
+                                    ymin = Q25, 
+                                    ymax = Q75, 
+                                    fill = cl),
+                      alpha = .5,
+                      show.legend = FALSE) +
+          facet_wrap(facets = ~variable, 
+                     scales = "free", 
+                     ncol = 3) +
+          theme_bw()
       })
-      
     }
   })
 }

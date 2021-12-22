@@ -324,12 +324,25 @@ dta_sucho_month[variable == "perc" & value == 0, value := .01]
 ggplot(data = dta_sucho_month[ID == "BP_1"]) +
   geom_line(mapping = aes(x = date,
                           y = value)) +
-  geom_hline(mapping = aes(yintercept = q),
-             colour = "red4") +
   facet_wrap(facets = ~variable, 
              scales = "free", 
-             ncol =1)
+             ncol = 1)
 
+# x <- dta_sucho_month[ID == "BP_1" & variable == "totr", value]
+# 
+# library(CoSMoS)
+# ?fitDist
+# 
+# y <- fitDist(data = x, 
+#              dist = "ggamma", 
+#              n.points = 30, 
+#              norm = 'N2',
+#              constrain = FALSE)
+# 
+# p <- plot(x = y) + theme_bw()
+# saveRDS(object = p,
+#         file = "~/Desktop/fit_plot.rds")
+# 
 # library(CoSMoS)
 # 
 # para <- dta_sucho_month[, .(unlist(fitDist(data = value, 
@@ -367,5 +380,25 @@ dta_sucho[index < -3.5, index := rnorm(n = .N,
 levels(x = dta_sucho$variable) <- c("SPI", "SRI", "SSI")
 
 
-write_fst(x = dta_sucho,
-          path = "./data/indexy_sucha.fst")
+# write_fst(x = dta_sucho,
+#           path = "./data/indexy_sucha.fst")
+
+## KZ ####
+dta_kz <- read_fst(path = "./data_raw/zmeny-clust.fst",
+                   as.data.table = TRUE)
+
+dta_kz
+str(dta_kz)
+
+dta_kz[, `:=`(ID = as.factor(x = paste(ID, HruIds,
+                                       sep = "_")),
+              HruIds = NULL,
+              cl = as.factor(x = cl),
+              dT = as.numeric(x = as.character(x = dT)) / 100)]
+
+dta_kz <- dta_kz[variable != "dTOTR" & variable != "dPREC" & variable != "dTEMP",]
+
+write_fst(x = dta_kz,
+          path = "./data/kz.fst")
+
+
