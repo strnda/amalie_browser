@@ -8,10 +8,11 @@ library(ggplot2)
 library(gridExtra)
 
 
-source("./dHrumBP.R")
-source("./dHrumKL.R")
-
 server <- function(input, output) {
+  
+  source("./R/petr/dHrumBP.R")
+  source("./R/petr/dHrumKL.R")
+  
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
     data.frame(
