@@ -222,7 +222,7 @@ dta
 # write_fst(x = dta,
 #           path = "./data/vlhkost_od_lukase.fst")
 
-## vrty vosko ####
+## vrty vocko ####
 
 vrty <- dta_all[grep(pattern = "tms4", 
                      x = ls, 
@@ -438,3 +438,61 @@ kl <- st_transform(x = kl,
                    crs = 4326)
 st_write(obj = kl, 
          dsn = "./data/kl.shp")
+
+## prutoky ####
+
+q <- readRDS(file = "./data_raw/prutoky_prelivy.rds")
+q <- as.data.table(x = q)
+
+class(x = q)
+str(object = q)
+
+library(maptools)
+
+q_xy <- readGPS(i = "gpx", 
+                f = "./data_raw/export.gpx")
+q_xy <- as.data.table(x = q_xy)
+q_xy <- q_xy[, .(V2, V5, V6)]
+
+setnames(x = q_xy,
+         old = c("V2", "V5", "V6"),
+         new = c("ID", "X", "Y"))
+
+q_xy
+
+write.fst(x = q_xy,
+          path = "./data/prutok_info.fst")
+
+temp <- data.table(ID = q_xy$ID,
+                   senzor = "prutok")
+
+# nfo_sensors <- rbind(nfo_sensors, temp)
+# 
+# write.fst(x = nfo_sensors,
+#           path = "./data/nfo_sensors.fst")
+
+q_melt <- melt(data = q,
+               id.vars = "TIME",
+               variable.name = "ID")
+
+q_melt[, ID := gsub(pattern = "PRUTOK_",
+                    replacement = "",
+                    x = ID)]
+
+prutok <- q_melt[, .(value = mean(x = value,
+                                  na.rm = TRUE)),
+                 by = .(ID, date = format(x = TIME,
+                                          format = "%Y-%m-%d"))]
+prutok[, `:=`(variable = as.factor(x = "Průtok [m^3/s]"),
+              date = as.IDate(x = date))]
+
+# write.fst(x = prutok,
+#           path = "./data/prutok.fst")
+
+ggplot(data = prutok) +
+  geom_line(mapping = aes(x = date, 
+                          y = value,
+                          group = ID)) +
+  facet_wrap(facets = ~variable,
+             scales = "free") +
+  theme(aspect.ratio = length(x = unique(x = prutoky$variable)) / 4)

@@ -27,8 +27,7 @@ ui <- fluidPage(
            dataTableOutput(outputId = "summary_table")),
     column(width = 7,
            # textOutput(outputId = "click"),
-           plotOutput(outputId = "plot",
-                      height = 975))
+           uiOutput("plot_ui"))
   )
 )
 
@@ -50,6 +49,7 @@ server <- function(input, output, session) {
   mikroklima <- fread(input = "./data/mikroklima.csv")
   eddy <- fread(input = "./data/eddy.csv")
   vrty <- read_fst(path = "./data/vrty_info.fst")
+  prutok <- read_fst(path = "./data/prutok_info.fst")
   
   nfo_sensors <- read_fst(path = "./data/nfo_sensors.fst", 
                           as.data.table = TRUE)
@@ -86,6 +86,9 @@ server <- function(input, output, session) {
                        as.data.table = TRUE)
   levels(x = eddy_dta$variable) <- c("Srážka [mm]", "Teplota [°C]")
   eddy_dta[, variable := as.character(x = variable)]
+  
+  prutok_dta <- read_fst(path = "./data/prutok.fst", 
+                         as.data.table = TRUE)
   
   output$map <- renderLeaflet({
     
@@ -134,6 +137,14 @@ server <- function(input, output, session) {
                                dendro$ID),
                  clusterOptions = markerClusterOptions(),
                  group = "Dendrometry") %>% 
+      addMarkers(data = prutok,
+                 lng = ~Y,
+                 lat = ~X,
+                 layerId = ~ID,
+                 label = paste("Profil:",
+                               prutok$ID),
+                 clusterOptions = markerClusterOptions(),
+                 group = "Průtoky") %>% 
       addPolygons(data = hru,
                   label = ~paste(ID, 
                                  as.character(x = OBJECTID)),
@@ -180,6 +191,7 @@ server <- function(input, output, session) {
                                          "Povodí Brejlského potoka",
                                          "Povodí Karlova luhu",
                                          "Vrty",
+                                         "Průtoky",
                                          "Vlhkostní senzory",
                                          "Dendrometry",
                                          "Mikroklima",
@@ -235,6 +247,11 @@ server <- function(input, output, session) {
         dta_plot <- vrty_dta[ID == click$id,]
       }
       
+      if (sens_click == "prutok") {
+        
+        dta_plot <- prutok_dta[ID == click$id,]
+      }
+      
       output$plot <- renderPlot({
         
         ggplot(data = dta_plot) +
@@ -247,6 +264,12 @@ server <- function(input, output, session) {
           labs(x = "Čas", 
                y = "Hodnota") +
           theme_bw()
+      })
+      
+      output$plot_ui <- renderUI({
+        
+        plotOutput(outputId = "plot", 
+                   height = length(x = unique(x = dta_plot$variable)) * 200)
       })
       
       stat <- dta_plot[, .(`Průměr` = mean(x = value, 
