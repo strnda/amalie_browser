@@ -89,6 +89,7 @@ server <- function(input, output, session) {
   
   prutok_dta <- read_fst(path = "./data/prutok.fst", 
                          as.data.table = TRUE)
+  levels(x = prutok_dta$variable) <- c("Průtok [l/s]")
   
   output$map <- renderLeaflet({
     
