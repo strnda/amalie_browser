@@ -10,8 +10,11 @@ library(gridExtra)
 
 server <- function(input, output) {
   
-  source("./R/petr/dHrumBP.R")
-  source("./R/petr/dHrumKL.R")
+  # source("./R/petr/dHrumBP.R")
+  # source("./R/petr/dHrumKL.R")
+  
+  source("dHrumBP.R")
+  source("dHrumKL.R")
   
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
@@ -110,7 +113,7 @@ server <- function(input, output) {
                                  as.character(as.Date(max(input$date_range[2L]))))
       outDta$statistics <- calculation_BP(outDta$data, outDta$data$outObs)
       # outDta$annualMean <- annual_mean_BP(outDta$data$dta)
-      outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
+      # outDta$annualMeanEVA <- annual_mean_EVA_BP(outDta$data$dta, outDta$annualMean)
       outDta$FDC = FlowDurationCurveBP(outDta$data)
       
     }
@@ -124,7 +127,7 @@ server <- function(input, output) {
                                  as.character(as.Date(max(input$date_range[2L]))))
       outDta$statistics <- calculation_KL(outDta$data, outDta$data$outObs)
       # outDta$annualMean <- annual_mean_KL(outDta$data$dta)
-      outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
+      # outDta$annualMeanEVA <- annual_mean_EVA_KL(outDta$data$dta, outDta$annualMean)
       outDta$FDC = FlowDurationCurveKL(outDta$data)
     }
     
@@ -187,7 +190,7 @@ server <- function(input, output) {
   output$plotAnnualMean <- renderPlot({
     if (is.null(outDta$data)) return()
     
-    ggplot(outDta$annualMean, aes(x = DTA)) +
+    ggplot(outDta$annualMean, aes(x = dta)) +
       geom_line(aes(y = meanTOTR), color = "black") +
       labs(y="Annual Mean", x = "Date")
     

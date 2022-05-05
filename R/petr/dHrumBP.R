@@ -6,20 +6,20 @@ FlowDurationCurveBP<-function(outdta){
   return(outdta$FDC)
 }
 
-
-annual_mean_EVA_BP <- function(outSimulation, mean_BP) {
-  outSimDT <- as.data.table(outSimulation)
-  AnnualmeanEVA <- outSimDT[, ':=' (MONTH = month(DTM),
-                                    YEAR = year(DTM))][, .(
-                                      meanAET = mean(AET),
-                                      meanEVAC = mean(EVAC),
-                                      meanEVAS = mean(EVAS),
-                                      meanEVBS = mean(EVBS)
-                                    ),
-                                    by = .(MONTH, YEAR)][, ':='(YEAR = NULL, MONTH = NULL)]
-  out = AnnualmeanEVA[, DTA := mean_BP$DTA]
-  out
-}
+# 
+# annual_mean_EVA_BP <- function(outSimulation, mean_BP) {
+#   outSimDT <- as.data.table(outSimulation)
+#   AnnualmeanEVA <- outSimDT[, ':=' (MONTH = month(DTM),
+#                                     YEAR = year(DTM))][, .(
+#                                       meanAET = mean(AET),
+#                                       meanEVAC = mean(EVAC),
+#                                       meanEVAS = mean(EVAS),
+#                                       meanEVBS = mean(EVBS)
+#                                     ),
+#                                     by = .(MONTH, YEAR)][, ':='(YEAR = NULL, MONTH = NULL)]
+#   out = AnnualmeanEVA[, DTA := mean_BP$DTA]
+#   out
+# }
 
 # annual_mean_BP <- function(outSimulation) {
 #   # Annual Total runoff
@@ -104,7 +104,8 @@ BP_runDHRUM <- function(params, gwStor, swStor, start_date, end_date) {
   
   #new <- data.table(Prec = prec, Temp = temp, DTM = DTM)
   #setwd("/home/eleni/CULS_FES/semester_3/Presentation of Environmental Data/project/dHRUM_shiny/R/eleni/data/")
-  rds = readRDS("./R/petr/data/BP_benchmark_LUMPED.rds")
+  # rds = readRDS("./R/petr/data/BP_benchmark_LUMPED.rds")
+  rds = readRDS("data/BP_benchmark_LUMPED.rds")
   
   new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
   
