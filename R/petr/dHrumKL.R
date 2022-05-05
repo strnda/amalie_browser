@@ -102,8 +102,8 @@ KL_runDHRUM = function(params, gwStor, swStor, start_date, end_date) {
   AreasKL <- 3.28*1000*1000
   IdsHrus <- paste0("KL",seq(1:length(AreasKL)))
   # end global variables
-  # rds = readRDS("./R/petr/data/KL_benchmark_LUMPED.rds")
-  rds = readRDS("data/KL_benchmark_LUMPED.rds")
+  rds = readRDS("./R/petr/data/KL_benchmark_LUMPED.rds")
+  # rds = readRDS("data/KL_benchmark_LUMPED.rds")
   new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
   
   filtered <- new %>%

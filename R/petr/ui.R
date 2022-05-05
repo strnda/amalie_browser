@@ -33,7 +33,7 @@ library(lubridate)
                                                            sliderInput("ks", "KS:", min = 0, max = 1, value = 0.001, step = 0.001),
                                                            sliderInput("kf", "KF:", min = 0, max = 1, value = 0.3, step = 0.01),
                                                            sliderInput("adiv", "ADIV:", min = 0, max = 1, value = 0.4, step = 0.01),
-                                                           # style = "height: 550px;",
+                                                           style = "height: 550px;",
                                                          ),
                                                          tabPanel(
                                                            "Vegetation" ,
@@ -44,7 +44,7 @@ library(lubridate)
                                                            sliderInput("cdiv", "CDIV:", min = 0, max = 0.5, value = 0.3, step = 0.01),
                                                            sliderInput("sdiv", "SDIV:", min = 0, max = 0.2, value = 0.05, step = 0.01),
                                                            sliderInput("csdiv", "CSDIV:", min = 0, max = 1, value = 0.08, step = 0.01),
-                                                           # style = "height: 550px;"
+                                                           style = "height: 550px;"
                                                          ),
                                                          
                                                          tabPanel(
@@ -66,10 +66,10 @@ library(lubridate)
                                                            sliderInput("ddfa", "DDFA:", min = 0, max = 10, value = 5, step = 0.1),
                                                            sliderInput("tetr", "TETR:", min = -0.5, max = 4.5, value = 0, step = 0.1),
                                                            sliderInput("tmel", "TMEL:", min = -3, max = 1, value = 0.0, step = 0.1),
-                                                           # style = "height: 550px;"
+                                                           style = "height: 550px;"
                                                          )
                                                        ),
-                                                       # style = "padding-left: 10px;",
+                                                       style = "padding-left: 10px;",
                                                        actionButton("runDhrum", "Run dHRUM", class = "btn btn-primary"),
                                                        
                                                      )
@@ -81,7 +81,7 @@ library(lubridate)
                                                            selectInput("PlotType", label = "Choose a plot:",
                                                                        choices = c("Time series", "Model performance", "State variables", "Evapotranspiration"))
                                                     ),
-                                                    column(width = 4, 
+                                                    column(width = 5, 
                                                            sliderInput("date_range", 
                                                                        "Choose a time window:", 
                                                                        min = as.POSIXct("1961-01-01"), 

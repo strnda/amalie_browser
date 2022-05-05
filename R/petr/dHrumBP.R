@@ -104,8 +104,8 @@ BP_runDHRUM <- function(params, gwStor, swStor, start_date, end_date) {
   
   #new <- data.table(Prec = prec, Temp = temp, DTM = DTM)
   #setwd("/home/eleni/CULS_FES/semester_3/Presentation of Environmental Data/project/dHRUM_shiny/R/eleni/data/")
-  # rds = readRDS("./R/petr/data/BP_benchmark_LUMPED.rds")
-  rds = readRDS("data/BP_benchmark_LUMPED.rds")
+  rds = readRDS("./R/petr/data/BP_benchmark_LUMPED.rds")
+  # rds = readRDS("data/BP_benchmark_LUMPED.rds")
   
   new <- data.table(DTM = rds$dta$DTM, Prec = rds$dta$PREC, Temp = rds$dta$TEMP, obsTOTR = rds$dta$TOTR)
   

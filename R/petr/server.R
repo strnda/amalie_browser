@@ -9,12 +9,12 @@ library(gridExtra)
 
 
 server <- function(input, output) {
+
+  source("./R/petr/dHrumBP.R")
+  source("./R/petr/dHrumKL.R")
   
-  # source("./R/petr/dHrumBP.R")
-  # source("./R/petr/dHrumKL.R")
-  
-  source("dHrumBP.R")
-  source("dHrumKL.R")
+  # source("dHrumBP.R")
+  # source("dHrumKL.R")
   
   # Reactive expression to create data frame of all input values ----
   sliderValues <- reactive({
